@@ -12,6 +12,17 @@ services:
       - database
     env_file:
       - api.env
+    
+  front:
+    container_name: front
+    build: ./front
+    ports:
+      - 8080:8080
+    volumes:
+      - ./front:/app
+    depends_on:
+      - api
+      - database
   
   database:
     container_name: database
