@@ -15,9 +15,9 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    # Construire l'image Docker
+    # Construire l'image Docker avec le chemin correct vers le Dockerfile
     - name: Build Docker image
-      run: docker build -t my-elixir-app .
+      run: docker build -t my-elixir-app ./api  # Spécifiez le chemin si nécessaire
 
     # Exécuter les tests à l'intérieur du conteneur Docker
     - name: Run tests in Docker container
