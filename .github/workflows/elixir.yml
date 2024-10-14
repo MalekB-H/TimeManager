@@ -2,40 +2,53 @@ name: CI with Docker Compose
 
 on:
   push:
-    branches: [main]
+    branches: [ "main" ]
   pull_request:
-    branches: [main]
+    branches: [ "main" ]
 
 jobs:
-  build-and-test:
+  build:
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4   
 
+    steps:
+      # 1. Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Set up Docker (install Docker, if not already available)
       - name: Set up Docker
         uses: docker/setup-buildx-action@v2
 
+      # 3. Install Docker Compose
       - name: Install Docker Compose
         run: |
           sudo apt-get update
           sudo apt-get install docker-compose -y
 
-      - name: Build and start services with Docker Compose
+      # 4. Build and start services with docker-compose
+      - name: Build and start services
         run: docker-compose up --build -d
 
+      # 5. Check all services logs (for debugging purposes)
+      - name: Check all services logs
+        run: docker-compose logs
+
+      # 6. Check service status (verify if services are running)
+      - name: Check service status
+        run: docker-compose ps
+
+      # 7. Wait for PostgreSQL to be ready (if necessary)
       - name: Wait for PostgreSQL to be ready
         run: docker-compose exec db sh -c "until pg_isready -h localhost -p 5432; do sleep 1; done"
 
+      # 8. Run backend tests (using -T for non-interactive terminal)
       - name: Run backend tests
-        run: docker-compose exec -T api mix test
+        run: docker-compose exec -T backend mix test
 
+      # 9. Run frontend tests (if any, using -T)
       - name: Run frontend tests
-        run: docker-compose exec -T front npm test
+        run: docker-compose exec -T frontend npm test
 
-      - name: Deploy to production (optional)
-        if: ${{ github.ref == 'refs/heads/main' }}
-        run: docker-compose up -d --detach
-
+      # 10. Shut down Docker Compose
       - name: Shut down Docker Compose
         run: docker-compose down
