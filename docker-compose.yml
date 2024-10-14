@@ -9,10 +9,11 @@ services:
     volumes:
       - ./api/api:/app
     depends_on:
-      - database
+      database:
+        condition: service_healthy
     env_file:
       - api.env
-    
+  
   front:
     container_name: front
     build: ./front
@@ -22,8 +23,10 @@ services:
       - ./front:/app
       - /app/node_modules
     depends_on:
-      - api
-      - database
+      database:
+        condition: service_healthy
+      api:
+        condition: service_started
     command: npm run serve
   
   database:
