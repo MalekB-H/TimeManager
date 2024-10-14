@@ -39,7 +39,7 @@ jobs:
 
       # 7. Wait for PostgreSQL to be ready
       - name: Wait for PostgreSQL to be ready
-        run: docker-compose exec db sh -c "until pg_isready -h localhost -p 5432; do sleep 5; done"
+        run: docker-compose exec database sh -c "until pg_isready -h localhost -p 5432; do sleep 5; done"
 
       # 8. Run backend tests
       - name: Run backend tests
