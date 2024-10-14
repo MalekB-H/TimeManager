@@ -18,8 +18,5 @@ COPY . .
 # build app for production with minification
 RUN npm run build
 
-#test
-RUN npm run serve
-
 EXPOSE 8080
 CMD [ "npm", "run", "serve" ]
