@@ -20,10 +20,11 @@ services:
       - 8080:8080
     volumes:
       - ./front:/app
+      - /app/node_modules
     depends_on:
       - api
       - database
-    command: ["npm", "run", "serve"]
+    command: npm run serve
   
   database:
     container_name: database
