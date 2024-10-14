@@ -51,7 +51,6 @@ defmodule ApiWeb.WorkingTimeController do
 
   def list_user_working_times(conn, %{"userID" => user_id} = params) do
     user_id = String.to_integer(user_id)
-    IO.inspect(user_id, label: "User ID")
     
     case Accounts.get_user(user_id) do
       nil ->
