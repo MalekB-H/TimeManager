@@ -29,14 +29,22 @@ jobs:
       - name: Build and start services
         run: docker-compose up --build -d
 
-      # 5. Run backend tests
+      # 5. Check backend logs (for debugging purposes)
+      - name: Check backend logs
+        run: docker-compose logs backend
+
+      # 6. Wait for PostgreSQL to be ready (if necessary)
+      - name: Wait for PostgreSQL to be ready
+        run: docker-compose exec db sh -c "until pg_isready -h localhost -p 5432; do sleep 1; done"
+
+      # 7. Run backend tests (using -T for non-interactive terminal)
       - name: Run backend tests
-        run: docker-compose exec backend mix test
+        run: docker-compose exec -T backend mix test
 
-      # 6. Run frontend tests (if any)
+      # 8. Run frontend tests (if any, using -T)
       - name: Run frontend tests
-        run: docker-compose exec frontend npm test
+        run: docker-compose exec -T frontend npm test
 
-      # 7. Shut down Docker Compose
+      # 9. Shut down Docker Compose
       - name: Shut down Docker Compose
         run: docker-compose down
