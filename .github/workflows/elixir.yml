@@ -28,11 +28,7 @@ jobs:
       # 4. Build and start services with docker-compose
       - name: Build and start services
         run: docker-compose up --build -d
-
-      # 5. Check backend logs (for debugging purposes)
-      - name: Check backend logs
-        run: docker-compose logs backend
-
+        
       # 6. Wait for PostgreSQL to be ready
       - name: Wait for PostgreSQL to be ready
         run: docker-compose exec db sh -c "until pg_isready -h localhost -p 5432; do sleep 1; done"
