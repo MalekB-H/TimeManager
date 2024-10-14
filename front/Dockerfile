@@ -12,6 +12,8 @@ COPY package*.json ./
 # install project dependencies
 RUN npm install
 
+RUN npm install -D serve
+
 # copy project files and folders to the current working directory (i.e. 'app' folder)
 COPY . .
 
