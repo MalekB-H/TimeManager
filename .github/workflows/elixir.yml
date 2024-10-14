@@ -33,7 +33,7 @@ jobs:
       - name: Check backend logs
         run: docker-compose logs backend
 
-      # 6. Wait for PostgreSQL to be ready (if necessary)
+      # 6. Wait for PostgreSQL to be ready
       - name: Wait for PostgreSQL to be ready
         run: docker-compose exec db sh -c "until pg_isready -h localhost -p 5432; do sleep 1; done"
 
@@ -41,7 +41,7 @@ jobs:
       - name: Run backend tests
         run: docker-compose exec -T backend mix test
 
-      # 8. Run frontend tests (if any, using -T)
+      # 8. Run frontend tests
       - name: Run frontend tests
         run: docker-compose exec -T frontend npm test
 
