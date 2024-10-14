@@ -15,22 +15,28 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2. Set up Docker Compose
+      # 2. Set up Docker (install Docker, if not already available)
       - name: Set up Docker
         uses: docker/setup-buildx-action@v2
 
-      # 3. Build and start services with docker-compose
+      # 3. Install Docker Compose
+      - name: Install Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install docker-compose -y
+
+      # 4. Build and start services with docker-compose
       - name: Build and start services
         run: docker-compose up --build -d
 
-      # 4. Run backend tests
-      - name: Run api tests
-        run: docker-compose exec api mix test
+      # 5. Run backend tests
+      - name: Run backend tests
+        run: docker-compose exec backend mix test
 
-      # 5. Run frontend tests 
+      # 6. Run frontend tests (if any)
       - name: Run frontend tests
-        run: docker-compose exec front npm test
+        run: docker-compose exec frontend npm test
 
-      # 6. Shut down the services
+      # 7. Shut down Docker Compose
       - name: Shut down Docker Compose
         run: docker-compose down
