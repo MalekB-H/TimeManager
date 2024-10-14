@@ -9,6 +9,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       # 1. Checkout the repository
       - name: Checkout code
@@ -24,9 +25,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install docker-compose -y
 
-      # 4. Build and start services with Docker Compose
+      # 4. Build and start services with docker-compose
       - name: Build and start services
-        run: docker-compose up --build -d --context ./
+        run: docker-compose up --build -d
 
       # 5. Check all services logs
       - name: Check all services logs
@@ -38,7 +39,7 @@ jobs:
 
       # 7. Wait for PostgreSQL to be ready
       - name: Wait for PostgreSQL to be ready
-        run: docker-compose exec db sh -c "until pg_isready -h localhost -p 5432 -U postgres; do sleep 2; done"
+        run: docker-compose exec db sh -c "until pg_isready -h localhost -p 5432; do sleep 1; done"
 
       # 8. Run backend tests
       - name: Run backend tests
