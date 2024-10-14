@@ -50,19 +50,27 @@ defmodule ApiWeb.WorkingTimeController do
   end
 
   def list_user_working_times(conn, %{"userID" => user_id} = params) do
-    case Accounts.get_user(user_id) do
-      nil ->
-        conn
-        |> put_status(:not_found)
-        |> put_view(json: TodolistWeb.ErrorJSON)
-        |> render(:"404", message: "User not found")
-      _user ->
-        start_time = params["start_time"]
-        end_time = params["end_time"]
-        working_times = Accounts.list_user_working_times(user_id, start_time, end_time)
-        render(conn, :index, working_times: working_times)
-    end
+  user_id = String.to_integer(user_id)
+  IO.inspect(user_id, label: "User ID")
+  
+  case Accounts.get_user(user_id) do
+    nil ->
+      conn
+      |> put_status(:not_found)
+      |> put_view(json: ApiWeb.ErrorJSON)
+      |> render(:"404", message: "User not found")
+    _user ->
+      start_time = params["start"]
+      end_time = params["end"]
+
+      start_datetime = if start_time, do: DateTime.from_iso8601(start_time) |> elem(1), else: nil
+      end_datetime = if end_time, do: DateTime.from_iso8601(end_time) |> elem(1), else: nil
+    
+      working_times = Accounts.list_user_working_times(user_id, start_datetime, end_datetime)
+      
+      render(conn, :index, working_times: working_times)
   end
+end
 
   def show(conn, %{"id" => id}) do
     working_time = Accounts.get_working_time!(id)
