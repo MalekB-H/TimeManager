@@ -2,45 +2,40 @@ name: CI with Docker Compose
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [main]
   pull_request:
-    branches: [ "main" ]
+    branches: [main]
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
-
     steps:
-      # 1. Checkout the repository
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4   
 
-      # 2. Set up Docker (install Docker, if not already available)
       - name: Set up Docker
         uses: docker/setup-buildx-action@v2
 
-      # 3. Install Docker Compose
       - name: Install Docker Compose
         run: |
           sudo apt-get update
           sudo apt-get install docker-compose -y
 
-      # 4. Build and start services with docker-compose
-      - name: Build and start services
+      - name: Build and start services with Docker Compose
         run: docker-compose up --build -d
-        
-      # 6. Wait for PostgreSQL to be ready
+
       - name: Wait for PostgreSQL to be ready
         run: docker-compose exec db sh -c "until pg_isready -h localhost -p 5432; do sleep 1; done"
 
-      # 7. Run backend tests (using -T for non-interactive terminal)
       - name: Run backend tests
-        run: docker-compose exec -T backend mix test
+        run: docker-compose exec -T api mix test
 
-      # 8. Run frontend tests
       - name: Run frontend tests
-        run: docker-compose exec -T frontend npm test
+        run: docker-compose exec -T front npm test
 
-      # 9. Shut down Docker Compose
+      - name: Deploy to production (optional)
+        if: ${{ github.ref == 'refs/heads/main' }}
+        run: docker-compose up -d --detach
+
       - name: Shut down Docker Compose
         run: docker-compose down
