@@ -9,11 +9,10 @@ services:
     volumes:
       - ./api/api:/app
     depends_on:
-      database:
-        condition: service_healthy
+      - database
     env_file:
       - api.env
-  
+    
   front:
     container_name: front
     build: ./front
@@ -21,13 +20,10 @@ services:
       - 8080:8080
     volumes:
       - ./front:/app
-      - /app/node_modules
     depends_on:
-      database:
-        condition: service_healthy
-      api:
-        condition: service_started
-    command: npm run serve
+      - api
+      - database
+    command: ["npm", "run", "serve"]
   
   database:
     container_name: database
@@ -39,8 +35,3 @@ services:
       - ./database:/var/lib/postgresql/data
     ports:
       - "5432:5432"
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
-      timeout: 5s
-      retries: 5

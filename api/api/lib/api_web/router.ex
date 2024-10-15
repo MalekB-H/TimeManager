@@ -5,8 +5,19 @@ defmodule ApiWeb.Router do
     plug :accepts, ["json"]
   end
 
+  pipeline :auth do
+    plug ApiWeb.AuthPipeline
+  end
+
  scope "/api", ApiWeb do
   pipe_through :api
+
+  post "/register", AuthController, :register
+  post "/login", AuthController, :login
+ end
+
+ scope "/api", ApiWeb do
+  pipe_through [:api, :auth]
 
   resources "/users", UserController, except: [:new, :edit]
 

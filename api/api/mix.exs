@@ -54,7 +54,9 @@ defmodule Api.MixProject do
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.1.1"},
       {:cors_plug, "~> 3.0"},
-      {:bandit, "~> 1.5"}
+      {:bandit, "~> 1.5"},
+      {:guardian, "~> 2.3"},
+      {:bcrypt_elixir, "~> 3.0"}
     ]
   end
 

@@ -120,6 +120,23 @@ defmodule Api.Accounts do
     |> Repo.all()
   end
 
+  def get_user_by_email(email) do
+    Repo.get_by(User, email: email)
+  end
+
+  def authenticate_user(email, password) do
+    user = get_user_by_email(email)
+    case user do
+      nil -> {:error, :unauthorized}
+      _ ->
+        if Bcrypt.verify_pass(password, user.password_hash) do
+          {:ok, user}
+        else
+          {:error, :unauthorized}
+        end
+    end
+  end
+
   alias Api.Accounts.WorkingTime
 
   @doc """

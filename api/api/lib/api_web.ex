@@ -57,6 +57,15 @@ defmodule ApiWeb do
     end
   end
 
+  def json do
+    quote do
+      use Phoenix.Controller, formats: [:json]
+      import PLug.Conn
+      import ApiWeb.Getttext
+      unquote(verified_routes())
+    end
+  end
+
   @doc """
   When used, dispatch to the appropriate controller/live_view/etc.
   """
