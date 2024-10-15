@@ -34,9 +34,8 @@ jobs:
       - name: Wait for database to be ready
         run: docker-compose exec -T database sh -c "until pg_isready -h localhost -p 5432; do sleep 5; done"
 
-      - name: Check if database exists
-        run: |
-          docker-compose exec -T database psql -U postgres -d app -c "SELECT datname FROM app WHERE datname = 'app';"
+      - name: Create database
+        run: docker-compose exec -T database psql -U postgres -c "CREATE DATABASE app;"
 
       - name: Check if users table exists
         run: |
