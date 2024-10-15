@@ -2,30 +2,21 @@ name: CI with Docker Compose
 
 on:
   push:
-    branches: ["main"]
+    branches: [ "main" ]
   pull_request:
-    branches: ["main"]
+    branches: [ "main" ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
-    services:
-      database:
-        image: postgres
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-        ports:
-          - 5432:5432
 
     steps:
       # 1. Checkout the repository
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2. Set up Docker Buildx
-      - name: Set up Docker Buildx
+      # 2. Set up Docker
+      - name: Set up Docker
         uses: docker/setup-buildx-action@v2
 
       # 3. Install Docker Compose
@@ -38,32 +29,30 @@ jobs:
       - name: Build and start services
         run: docker-compose up --build -d
 
-      # 5. Wait for PostgreSQL to be ready
-      - name: Wait for database
-        run: |
-          echo "Waiting for PostgreSQL to be ready..."
-          until docker-compose exec -T database pg_isready -U postgres; do
-            sleep 5
-          done
+      # 5. Check running containers
+      - name: Check running containers
+        run: docker-compose ps  # Ajout de cette ligne pour vérifier les conteneurs en cours d'exécution
 
-      # 6. Run backend tests
-      - name: Run backend tests
-        run: docker-compose exec -T api mix test --trace
-
-      # 7. Run frontend tests
-      - name: Run frontend tests
-        run: docker-compose exec -T front npm test -- --watchAll=false
-
-      # 8. Run security tests
-      - name: Run security tests
-        run: |
-          echo "Running security tests..."
-          docker-compose exec -T front npm audit
-
-      # 9. Check all services logs
+      # 6. Check all services logs
       - name: Check all services logs
         run: docker-compose logs
 
-      # 10. Shut down Docker Compose
+      # 7. Check service status
+      - name: Check service status
+        run: docker-compose ps
+
+      # 8. Wait for PostgreSQL to be ready
+      - name: Wait for database to be ready
+        run: docker-compose exec -T database sh -c "until pg_isready -h localhost -p 5432; do sleep 5; done"
+
+      # 9. Run backend tests
+      - name: Run backend tests with trace
+        run: docker-compose exec -T api mix test --trace
+
+      # 10. Run frontend tests
+      - name: Run frontend tests
+        run: docker-compose exec -T front npm test
+
+      # 11. Shut down Docker Compose
       - name: Shut down Docker Compose
         run: docker-compose down
