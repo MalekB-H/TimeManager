@@ -25,11 +25,11 @@ jobs:
       - name: Build and start services
         run: docker-compose up --build -d
 
-      - name: Display backend logs
-        run: docker-compose logs backend
-
       - name: Check backend container health
         run: docker-compose ps
+
+      - name: Display backend logs
+        run: docker-compose logs backend
 
       - name: Wait for database to be ready
         run: docker-compose exec -T database sh -c "until pg_isready -h localhost -p 5432; do sleep 5; done"
