@@ -1,10 +1,10 @@
-name: CI
+name: CI with Docker Compose
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   build:
@@ -25,37 +25,53 @@ jobs:
           --health-retries=5
 
     steps:
-      - name: Check out code
-        uses: actions/checkout@v2
+      # 1. Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
+      # 2. Set up Docker
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v2
 
-      - name: Build and run containers
+      # 3. Build and start services with docker-compose
+      - name: Build and start services
+        run: docker-compose up --build -d
+
+      # 4. Check all services logs
+      - name: Check all services logs
+        run: docker-compose logs
+
+      # 5. Check service status
+      - name: Check service status
+        run: docker-compose ps
+
+      # 6. Wait for PostgreSQL to be ready
+      - name: Wait for database to be ready
         run: |
-          docker-compose up --build -d
-          docker-compose ps
+          docker-compose exec -T database sh -c "until pg_isready -h localhost -p 5432; do sleep 5; done"
 
-      - name: Run API Tests
+      # 7. Run API tests
+      - name: Run backend tests
         run: |
-          # Assuming you have tests defined for your API
-          curl -f http://localhost:4000/api/health || exit 1
+          docker-compose exec -T api mix test --trace
 
-      - name: Run Frontend Tests
+      # 8. Run frontend tests
+      - name: Run frontend tests
         run: |
-          # Run tests for the frontend application
-          curl -f http://localhost:8080 || exit 1
+          docker-compose exec -T front npm test
 
+      # 9. Run Security Tests using OWASP ZAP
       - name: Run Security Tests
         run: |
-          # Example security tests using OWASP ZAP
           docker run -t owasp/zap2docker-stable zap-baseline.py -t http://localhost:8080 -r zap_report.html
-          
+
+      # 10. Upload ZAP Report
       - name: Upload ZAP Report
         uses: actions/upload-artifact@v2
         with:
           name: zap-report
           path: zap_report.html
 
-      - name: Shutdown services
+      # 11. Shut down Docker Compose
+      - name: Shut down Docker Compose
         run: docker-compose down
