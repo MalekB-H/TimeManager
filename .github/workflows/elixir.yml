@@ -25,20 +25,20 @@ jobs:
       - name: Build and start services
         run: docker-compose up --build -d
 
-      - name: Check backend container health
+      - name: Check api container health
         run: docker-compose ps
 
-      - name: Display backend logs
-        run: docker-compose logs backend
+      - name: Display api logs
+        run: docker-compose logs api
 
       - name: Wait for database to be ready
         run: docker-compose exec -T database sh -c "until pg_isready -h localhost -p 5432; do sleep 5; done"
 
       - name: Run database migrations
-        run: docker-compose exec backend mix ecto.migrate
+        run: docker-compose exec api mix ecto.migrate
 
-      - name: Run backend tests with trace
-        run: docker-compose exec -T backend mix test --trace
+      - name: Run api tests with trace
+        run: docker-compose exec -T api mix test --trace
 
       - name: Run frontend tests
         run: docker-compose exec -T frontend npm test
