@@ -37,7 +37,7 @@ jobs:
       - name: Build and start services
         run: docker-compose up --build -d
 
-      # 4. Wait for database to be ready
+      # 4. Wait for PostgreSQL to be ready
       - name: Wait for database
         run: |
           echo "Waiting for PostgreSQL to be ready..."
@@ -53,10 +53,10 @@ jobs:
       - name: Run frontend tests
         run: docker-compose exec -T front npm test -- --watchAll=false
 
-      # 7. Check all services logs
+      # 8. Check all services logs
       - name: Check all services logs
         run: docker-compose logs
 
-      # 8. Shut down Docker Compose
+      # 9. Shut down Docker Compose
       - name: Shut down Docker Compose
         run: docker-compose down
