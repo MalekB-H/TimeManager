@@ -34,6 +34,14 @@ jobs:
       - name: Wait for database to be ready
         run: docker-compose exec -T database sh -c "until pg_isready -h localhost -p 5432; do sleep 5; done"
 
+      - name: Check if database exists
+        run: |
+          docker-compose exec -T database psql -U your_db_user -d postgres -c "SELECT datname FROM pg_database WHERE datname = 'your_database_name';"
+
+      - name: Check if users table exists
+        run: |
+          docker-compose exec -T database psql -U your_db_user -d your_database_name -c "SELECT to_regclass('public.users');"
+
       - name: Run api tests with trace
         run: docker-compose exec -T api mix test --trace
 
