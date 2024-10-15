@@ -11,44 +11,37 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout the repository
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2. Set up Docker
       - name: Set up Docker
         uses: docker/setup-buildx-action@v2
 
-      # 3. Install Docker Compose
       - name: Install Docker Compose
         run: |
           sudo apt-get update
           sudo apt-get install docker-compose -y
 
-      # 4. Build and start services with docker-compose
       - name: Build and start services
         run: docker-compose up --build -d
 
-      # 5. Check all services logs
-      - name: Check all services logs
-        run: docker-compose logs
+      - name: Display backend logs
+        run: docker-compose logs backend
 
-      # 6. Check service status
-      - name: Check service status
+      - name: Check backend container health
         run: docker-compose ps
 
-      # 7. Wait for PostgreSQL to be ready
       - name: Wait for database to be ready
         run: docker-compose exec -T database sh -c "until pg_isready -h localhost -p 5432; do sleep 5; done"
 
-      # 8. Run backend tests
+      - name: Run database migrations
+        run: docker-compose exec backend mix ecto.migrate
+
       - name: Run backend tests with trace
         run: docker-compose exec -T backend mix test --trace
 
-      # 9. Run frontend tests
       - name: Run frontend tests
         run: docker-compose exec -T frontend npm test
 
-      # 10. Shut down Docker Compose
       - name: Shut down Docker Compose
         run: docker-compose down
