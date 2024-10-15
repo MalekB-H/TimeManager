@@ -34,12 +34,23 @@ jobs:
       - name: Wait for database to be ready
         run: docker-compose exec -T database sh -c "until pg_isready -h localhost -p 5432; do sleep 5; done"
 
-      - name: Create database
-        run: docker-compose exec -T database psql -U postgres -c "CREATE DATABASE app;"
+      - name: Create database if it does not exist
+        run: |
+          DB_EXIST=$(docker-compose exec -T database psql -U postgres -tAc "SELECT 1 FROM pg_database WHERE datname='app'")
+          if [ "$DB_EXIST" != "1" ]; then
+            echo "Creating database 'app'..."
+            docker-compose exec -T database psql -U postgres -c "CREATE DATABASE app;"
+          else
+            echo "Database 'app' already exists."
+          fi
+
+      - name: Run database migrations
+        run: docker-compose exec -T api mix ecto.migrate
 
       - name: Check if users table exists
         run: |
           docker-compose exec -T database psql -U postgres -d app -c "SELECT to_regclass('public.users');"
+
 
       - name: Run api tests with trace
         run: docker-compose exec -T api mix test --trace
