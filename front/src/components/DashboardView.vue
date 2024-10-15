@@ -11,9 +11,11 @@
     <p v-else class="text-gray-600">Veuillez sélectionner un employé pour voir ses informations.</p>
 
     <div v-if="selectedEmployee" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <WorkingTimeChart :userId="selectedEmployee.id" ref="workingTimeChart" />
-      <WorkingHoursChart :userId="selectedEmployee.id" ref="workingHoursChart" />
-      <UserPerformance :userId="selectedEmployee.id" ref="userPerformance" />
+      <WorkingTimeChart :userId="selectedEmployee.id" />
+      <WorkingTimeSelector :userId="selectedEmployee.id" />
+      <ClockingHistory :userId="selectedEmployee.id" />
+      <WorkingHoursChart :userId="selectedEmployee.id" />
+      <UserPerformance :userId="selectedEmployee.id" />
     </div>
   </div>
 </template>
@@ -22,6 +24,8 @@
   import { ref } from 'vue';
   import EmployeeSelector from './EmployeeSelector.vue';
   import WorkingTimeChart from './WorkingTimeChart.vue';
+  import WorkingTimeSelector from './WorkingTimeSelector.vue';
+  import ClockingHistory from './ClockingHistory.vue';
   import WorkingHoursChart from './WorkingHoursChart.vue';
   import UserPerformance from './UserPerformance.vue';
 
@@ -30,6 +34,8 @@
     components: {
       EmployeeSelector,
       WorkingTimeChart,
+      WorkingTimeSelector,
+      ClockingHistory,
       WorkingHoursChart,
       UserPerformance
     },

@@ -20,19 +20,6 @@ if [[ -z `psql -Atqc "\\list $PGDATABASE"` ]]; then
 
   echo "Creating routes.."
   mix ecto.create
-  
-  # User
-  # echo "User tables creating.."
-  # yes | mix phx.gen.json Accounts User users email:string username:string password_hash:string
-  
-  # Working
-  # echo "Working tables creating.."
-  # yes | mix phx.gen.json Accounts WorkingTime working_times start_time:utc_datetime end_time:utc_datetime user_id:references:users
-  
-  # Clocking
-  # echo "Clocking tables creating.."
-  # yes | mix phx.gen.json Accounts Clocking clockings clock_in:utc_datetime clock_out:utc_datetime user_id:references:users  
-  
   mix ecto.migrate
   mix run priv/repo/seeds.exs
   echo "Database $PGDATABASE created."
