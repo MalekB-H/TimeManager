@@ -33,6 +33,11 @@ jobs:
       - name: Check running containers
         run: docker-compose ps  # Ajout de cette ligne pour vérifier les conteneurs en cours d'exécution
 
+      - name: install npm
+        run: |
+            docker-compose exec -T front npm install
+            docker-compose exec -T front npm install  @vue/cli-service
+         
       # 6. Check all services logs
       - name: Check all services logs
         run: docker-compose logs
