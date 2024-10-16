@@ -48,7 +48,7 @@ jobs:
       # 9. Run backend tests
       - name: Run backend tests with trace
         run: |
-            docker-compose exec -T api mix hex.config fetch_timeout 600_000
+            docker-compose exec -T api mix hex.config 
             docker-compose exec -T api mix deps.get
             docker-compose exec -T api mix test --trace
 
