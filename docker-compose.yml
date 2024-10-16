@@ -23,7 +23,6 @@ services:
     depends_on:
       - api
       - database
-    command: ["npm", "run", "serve"]
   
   database:
     container_name: database
