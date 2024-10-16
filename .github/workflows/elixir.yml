@@ -33,13 +33,7 @@ jobs:
       - name: Check front service logs
         run: docker-compose logs front
 
-      # 6. Test lancement database
-      - name: Set up database
-        run: |
-          docker-compose exec -T api mix ecto.create
-          docker-compose exec -T api mix ecto.migrate
-
-      # 7. Check running containers
+      # 6. Check running containers
       - name: Check running containers
         run: docker-compose ps  # Ajout de cette ligne pour vérifier les conteneurs en cours d'exécution
 
@@ -48,17 +42,23 @@ jobs:
             docker-compose exec -T front npm install
             docker-compose exec -T front npm install  @vue/cli-service
          
-      # 8. Check all services logs
+      # 7. Check all services logs
       - name: Check all services logs
         run: docker-compose logs
 
-      # 9. Check service status
+      # 8. Check service status
       - name: Check service status
         run: docker-compose ps
 
-      # 10. Wait for PostgreSQL to be ready
+      # 9. Wait for PostgreSQL to be ready
       - name: Wait for database to be ready
         run: docker-compose exec -T database sh -c "until pg_isready -h localhost -p 5432; do sleep 5; done"
+
+      # 10. Test lancement database
+      - name: Set up database
+        run: |
+          docker-compose exec -T api mix ecto.create
+          docker-compose exec -T api mix ecto.migrate
 
       # 11. Run backend tests
       - name: Run backend tests with trace
