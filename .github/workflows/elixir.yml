@@ -39,7 +39,6 @@ jobs:
 
       - name: install npm
         run: |
-            docker-compose restart front
             docker-compose exec -T front npm install
             docker-compose exec -T front npm install  @vue/cli-service
          
