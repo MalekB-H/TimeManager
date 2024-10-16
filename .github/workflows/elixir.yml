@@ -26,6 +26,11 @@ jobs:
           sudo apt-get update
           sudo apt-get install docker-compose -y
 
+      - name: Installe de Vue cli
+        run: |
+             apt install nodejs
+             npm install @vue/cli-service
+
       # 4. Build and start services with docker-compose
       - name: Build and start services
         run: docker-compose up --build
