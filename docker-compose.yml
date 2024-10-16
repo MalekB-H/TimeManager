@@ -2,23 +2,23 @@ version: '3.8'
 
 services:
   api:
-    container_name: api
     build: ./api
-    ports:
-      - 4000:4000
-    volumes:
-      - ./api/api:/app
-    depends_on:
-      - database
-    env_file:
-      - api.env
     command: >
       sh -c "
-        /app/wait-for-it.sh database:5432 -t 60 &&
-        mix ecto.create &&
-        mix ecto.migrate &&
+        while ! pg_isready -h database -p 5432 -U postgres; do
+          echo 'Waiting for PostgreSQL...'
+          sleep 2
+        done
+        echo 'PostgreSQL is ready!'
+        mix deps.get && 
+        mix ecto.create && 
+        mix ecto.migrate && 
         mix phx.server
       "
+    environment:
+      - MIX_ENV=dev
+    depends_on:
+      - database
     
   front:
     container_name: front
