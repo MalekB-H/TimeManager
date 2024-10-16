@@ -46,7 +46,7 @@ jobs:
 
       # 8. Check running containers
       - name: Check running containers
-        run: docker-compose ps
+        run: docker-compose ps -a
 
       # 9. Check api logs
       - name: Check API logs
