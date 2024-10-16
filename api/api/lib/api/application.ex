@@ -7,6 +7,7 @@ defmodule Api.Application do
 
   @impl true
   def start(_type, _args) do
+    Api.DatabaseChecker.wait_for_database()
     children = [
       ApiWeb.Telemetry,
       Api.Repo,
