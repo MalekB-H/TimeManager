@@ -41,7 +41,7 @@ jobs:
       - name: Wait for services to be ready
         run: |
           docker-compose exec -T database sh -c "until pg_isready -h localhost -p 5432; do sleep 5; done"
-          docker-compose exec -T timemanager_api_1 sh -c "while ! curl -s http://localhost:4000 > /dev/null; do sleep 2; done"
+          docker-compose exec -T api sh -c "while ! curl -s http://localhost:4000 > /dev/null; do sleep 2; done"
 
       # 8. Check running containers
       - name: Check running containers
