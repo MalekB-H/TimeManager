@@ -31,7 +31,7 @@ jobs:
 
       # 5. Check running containers
       - name: Check running containers
-        run: docker-compose ps  # Ajout de cette ligne pour vérifier les conteneurs en cours d'exécution
+        run: docker-compose ps
 
       # 6. Check all services logs
       - name: Check all services logs
@@ -56,3 +56,17 @@ jobs:
       # 11. Shut down Docker Compose
       - name: Shut down Docker Compose
         run: docker-compose down
+
+      # 12. Login to Azure Container Registry
+      - name: Login to Azure Container Registry
+        run: echo "${{ secrets.ACR_PASSWORD }}" | docker login timemanagerpar3.azurecr.io --username timemanagerpar3 --password-stdin
+
+      # 13. Build and push Docker images
+      - name: Build and push Docker images
+        run: |
+          docker build -t timemanagerpar3.azurecr.io/api:latest ./api
+          docker build -t timemanagerpar3.azurecr.io/front:latest ./front
+          docker build -t timemanagerpar3.azurecr.io/database:latest ./database
+          docker push timemanagerpar3.azurecr.io/api:latest
+          docker push timemanagerpar3.azurecr.io/front:latest
+          docker push timemanagerpar3.azurecr.io/database:latest
