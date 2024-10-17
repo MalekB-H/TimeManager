@@ -1,0 +1,72 @@
+name: CI with Docker Compose
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Set up Docker
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v2
+
+      # 3. Install Docker Compose
+      - name: Install Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install docker-compose -y
+
+      # 4. Build and start services with docker-compose
+      - name: Build and start services
+        run: docker-compose up --build -d
+
+      # 5. Check running containers
+      - name: Check running containers
+        run: docker-compose ps
+
+      # 6. Check all services logs
+      - name: Check all services logs
+        run: docker-compose logs
+
+      # 7. Check service status
+      - name: Check service status
+        run: docker-compose ps
+
+      # 8. Wait for PostgreSQL to be ready
+      - name: Wait for database to be ready
+        run: docker-compose exec -T database sh -c "until pg_isready -h localhost -p 5432; do sleep 5; done"
+
+      # 9. Run backend tests
+      - name: Run backend tests with trace
+        run: docker-compose exec -T api mix test --trace
+
+      # 10. Run frontend tests
+      - name: Run frontend tests
+        run: docker-compose exec -T front npm test
+
+      # 11. Shut down Docker Compose
+      - name: Shut down Docker Compose
+        run: docker-compose down
+
+      # 12. Login to Azure Container Registry
+      - name: Login to Azure Container Registry
+        run: echo "${{ secrets.ACR_PASSWORD }}" | docker login timemanagerpar3.azurecr.io --username timemanagerpar3 --password-stdin
+
+      # 13. Build and push Docker images
+      - name: Build and push Docker images
+        run: |
+          docker build -t timemanagerpar3.azurecr.io/api:latest ./api
+          docker build -t timemanagerpar3.azurecr.io/front:latest ./front
+          docker build -t timemanagerpar3.azurecr.io/database:latest ./database
+          docker push timemanagerpar3.azurecr.io/api:latest
+          docker push timemanagerpar3.azurecr.io/front:latest
+          docker push timemanagerpar3.azurecr.io/database:latest
