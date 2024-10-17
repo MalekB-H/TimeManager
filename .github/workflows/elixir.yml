@@ -15,7 +15,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # This fetches all history for all branches and tags
+          fetch-depth: 0  # Fetch all history
 
       # 2. Set up Docker
       - name: Set up Docker
@@ -37,7 +37,7 @@ jobs:
 
       # 6. Ensure dependencies are installed
       - name: Ensure dependencies are installed
-        run: docker-compose exec -T api mix deps.get
+        run: docker-compose exec -T api sh -c "cd /app && git fetch --unshallow || git fetch --all && mix deps.get"
 
       # 7. Check all services logs
       - name: Check all services logs
