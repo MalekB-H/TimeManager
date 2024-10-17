@@ -40,7 +40,7 @@ jobs:
       # 8. Build and push Docker images
       - name: Build and push Docker images
         run: |
-          docker compose up --build
+          docker compose up --build -d
           docker push timemanagerpar3.azurecr.io/database
           docker push timemanagerpar3.azurecr.io/api
           docker push timemanagerpar3.azurecr.io/front
