@@ -39,8 +39,27 @@ export default {
     });
   },
 
-
   getClockings(userId) {
     return axios.get(`${API_URL}/clockings/${userId}`);
+  },
+
+  // méthode pour enregistrer le début du travail
+  startClocking(userId, startTime) {
+    return axios.post(`${API_URL}/clockings/`, {
+      clocking : {
+        user_id: userId,
+        clock_in: startTime
+      }
+    });
+  },
+
+  // méthode pour enregistrer la fin du travail
+  endClocking(userId, endTime) {
+    return axios.put(`${API_URL}/clockings`, {
+      clocking : {
+        user_id: userId,
+        clock_out : endTime
+      }
+    });
   }
 };

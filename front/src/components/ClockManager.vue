@@ -1,8 +1,6 @@
 <template>
     <div>
       <h2>Clock Manager</h2>
-      <button @click="toggleClock">{{ clockIn ? 'Clock Out' : 'Clock In' }}</button>
-      <p>{{ clockIn ? 'Working period in progress.' : 'No working period in progress.' }}</p>
     </div>
   </template>
   
