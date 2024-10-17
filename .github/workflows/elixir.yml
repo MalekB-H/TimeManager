@@ -47,8 +47,9 @@ jobs:
 
       # 9. Run API tests
       - name: Run API tests
-        run: docker-compose exec -T api mix deps.get
-        run: docker-compose exec -T api mix test --trace
+        run: |
+            docker-compose exec -T api mix deps.get
+            docker-compose exec -T api mix test --trace
 
       # 10. Shut down Docker Compose
       - name: Shut down Docker Compose
