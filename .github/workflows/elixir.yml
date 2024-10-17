@@ -45,15 +45,27 @@ jobs:
       - name: Wait for database to be ready
         run: docker-compose exec -T database sh -c "until pg_isready -h localhost -p 5432; do sleep 5; done"
 
-      # 11. Shut down Docker Compose
+      # 9. Check permissions of Dockerfile for database
+      - name: Check permissions of Dockerfile
+        run: ls -l database/Dockerfile
+
+      # 10. Run backend tests
+      - name: Run backend tests with trace
+        run: docker-compose exec -T api mix test --trace
+
+      # 11. Run frontend tests
+      - name: Run frontend tests
+        run: docker-compose exec -T front npm test
+
+      # 12. Shut down Docker Compose
       - name: Shut down Docker Compose
         run: docker-compose down
 
-      # 12. Login to Azure Container Registry
+      # 13. Login to Azure Container Registry
       - name: Login to Azure Container Registry
         run: echo "${{ secrets.ACR_PASSWORD }}" | docker login timemanagerpar3.azurecr.io --username timemanagerpar3 --password-stdin
 
-      # 13. Build and push Docker images
+      # 14. Build and push Docker images
       - name: Build and push Docker images
         run: |
           docker build -t timemanagerpar3.azurecr.io/api:latest ./api
