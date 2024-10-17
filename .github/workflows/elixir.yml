@@ -45,6 +45,14 @@ jobs:
       - name: Wait for database to be ready
         run: docker-compose exec -T database sh -c "until pg_isready -h localhost -p 5432; do sleep 5; done"
 
+      # 9. Run backend tests
+      - name: Run backend tests with trace
+        run: docker-compose exec -T api mix test --trace
+
+      # 10. Run frontend tests
+      - name: Run frontend tests
+        run: docker-compose exec -T front npm test
+
       # 11. Shut down Docker Compose
       - name: Shut down Docker Compose
         run: docker-compose down
