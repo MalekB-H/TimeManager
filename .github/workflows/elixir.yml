@@ -26,20 +26,25 @@ jobs:
       - name: Build Docker images
         run: docker compose -f docker-compose.yml build
 
-      # 5. Tag the images manually
+      # 5. List Docker images (for debugging)
+      - name: List Docker images
+        run: docker images
+
+      # 6. Tag the images manually
       - name: Tag Docker images
         run: |
-          docker tag api timemanagerpar3.azurecr.io/api:latest
-          docker tag front timemanagerpar3.azurecr.io/front:latest
+          # Replace 'your_project_api' and 'your_project_front' by the correct image names from the 'docker images' output
+          docker tag your_project_api timemanagerpar3.azurecr.io/api:latest
+          docker tag your_project_front timemanagerpar3.azurecr.io/front:latest
           docker tag postgres:latest timemanagerpar3.azurecr.io/database:latest
 
-      # 6. Push Docker images to ACR
+      # 7. Push Docker images to ACR
       - name: Push Docker images to ACR
         run: |
           docker push timemanagerpar3.azurecr.io/api:latest
           docker push timemanagerpar3.azurecr.io/front:latest
           docker push timemanagerpar3.azurecr.io/database:latest
 
-      # 7. Deploy containers using Docker Compose
+      # 8. Deploy containers using Docker Compose
       - name: Deploy containers
         run: docker compose -f docker-compose.yml up -d
