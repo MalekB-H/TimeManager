@@ -64,9 +64,8 @@ export default {
     const recordStartTime = async () => {
       if (!props.userId) return;
 
-      startTime.value = new Date();
       try {
-        await api.startClocking(props.userId, startTime);
+        await api.startClocking(props.userId);
         console.log('Temps de début enregistré:', startTime.value);
         emit('refreshWorkingTime'); 
       } catch (error) {
