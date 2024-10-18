@@ -47,8 +47,8 @@ export default {
   startClocking(userId, startTime) {
     return axios.post(`${API_URL}/clockings/`, {
       clocking : {
-        user_id: userId,
-        clock_in: startTime
+        "user_id": userId,
+        "clock_in": startTime
       }
     });
   },

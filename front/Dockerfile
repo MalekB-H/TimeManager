@@ -15,4 +15,4 @@ RUN npm install -g http-server
 COPY . .
 
 EXPOSE 8080
-CMD ["http-server", "dist"]
+CMD ["npm", "run", "serve"]

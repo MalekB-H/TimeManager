@@ -80,29 +80,29 @@ export default {
             break;
         }
 
-        const clockingsResponse = await api.getClockings(props.userId);
-        console.log('Réponse de pointage:', clockingsResponse);
+        const workingTimesResponse = await api.getWorkingTimes(props.userId, start.toISOString(), end.toISOString());
+        console.log('Réponse des heures de travail:', workingTimesResponse);
 
-        let clockings = clockingsResponse.data;
+        let workingTimes = workingTimesResponse.data;
         const hoursWorked = labels.map(() => 0);
 
-        clockings.forEach(clock => {
-          const clockIn = new Date(clock.clock_in);
-          const clockOut = clock.clock_out ? new Date(clock.clock_out) : new Date();
-          const totalSeconds = (clockOut - clockIn) / 1000;
+        workingTimes.forEach(time => {
+          const startTime = new Date(time.start_time);
+          const endTime = time.end_time ? new Date(time.end_time) : new Date();
+          const totalSeconds = (endTime - startTime) / 1000;
           const hours = totalSeconds / 3600;
 
           let index;
           switch (selectedPeriod.value) {
             case 'week':
-              index = clockIn.getDay() - 1;
+              index = startTime.getDay() - 1;
               if (index === -1) index = 6;
               break;
             case 'month':
-              index = clockIn.getDate() - 1;
+              index = startTime.getDate() - 1;
               break;
             case 'year':
-              index = clockIn.getMonth();
+              index = startTime.getMonth();
               break;
           }
 

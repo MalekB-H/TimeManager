@@ -41,12 +41,11 @@ defmodule ApiWeb.ClockingController do
         |> render(:"404", message: "User not found")
       user ->
         clocking_params = %{
-          "user_id" => String.to_integer(user_id),
           "clock_out" => DateTime.utc_now()
         }
-        with {:ok, %Clocking{} = clocking} <- Accounts.create_clocking(clocking_params) do
+        with {:ok, %Clocking{} = clocking} <- Accounts.update_clocking(clocking_params) do
           conn
-          |> put_status(:created)
+          |> put_status(:modified)
           |> put_resp_header("location", ~p"/api/clockings/#{clocking}")
           |> render(:show, clocking: clocking)
         end

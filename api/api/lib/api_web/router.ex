@@ -26,7 +26,8 @@ defmodule ApiWeb.Router do
   get "/working_times/:userID", WorkingTimeController, :list_user_working_times
   resources "/working_times", WorkingTimeController, except: [:new, :edit]
 
-  post "/clockings/:userID", ClockingController, :create_clocking
+  post "/clockings/:userID", ClockingController, :start_clocking
+  put "/clockings/:userID/:id", ClockingController, :end_clocking
   get "/clockings/:userID", ClockingController, :list_user_clockings
   resources "/clockings", ClockingController, except: [:new, :edit]
   end
