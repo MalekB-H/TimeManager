@@ -26,7 +26,7 @@ jobs:
       - name: Build Docker images
         run: docker compose -f docker-compose.yml build
 
-      # 5. List Docker images (for debugging)
+      # 5. List Docker images (for debugging and verification)
       - name: List Docker images
         run: docker images
 
@@ -48,3 +48,7 @@ jobs:
       # 8. Deploy containers using Docker Compose
       - name: Deploy containers
         run: docker compose -f docker-compose.yml up -d
+
+      # 9. Show running containers (docker-compose ps)
+      - name: List running containers
+        run: docker compose -f docker-compose.yml ps
