@@ -33,9 +33,8 @@ jobs:
       # 6. Tag the images manually
       - name: Tag Docker images
         run: |
-          # Replace 'your_project_api' and 'your_project_front' by the correct image names from the 'docker images' output
-          docker tag your_project_api timemanagerpar3.azurecr.io/api:latest
-          docker tag your_project_front timemanagerpar3.azurecr.io/front:latest
+          docker tag timemanager-api   timemanagerpar3.azurecr.io/api:latest
+          docker tag timemanager-front timemanagerpar3.azurecr.io/front:latest
           docker tag postgres:latest timemanagerpar3.azurecr.io/database:latest
 
       # 7. Push Docker images to ACR
