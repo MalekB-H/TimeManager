@@ -3,7 +3,7 @@ name: Build and Deploy to Azure
 on:
   push:
     branches:
-      - main  # Vous pouvez changer cela en fonction de votre branche
+      - main  # Changez ceci en fonction de votre branche
 
 jobs:
   build-and-deploy:
@@ -22,25 +22,17 @@ jobs:
       - name: Login to Azure Container Registry
         run: echo "${{ secrets.ACR_PASSWORD }}" | docker login timemanagerpar3.azurecr.io --username timemanagerpar3 --password-stdin
 
-      # 4. Set up Docker Compose (if necessary)
-      - name: Set up Docker Compose
-        run: sudo apt-get install docker-compose
-
-      # 5. Build Docker images with correct tags
-      - name: Build Docker images
+      # 4. Build and push Docker images using Docker Compose
+      - name: Build and push Docker images
         run: |
-          docker build -t timemanagerpar3.azurecr.io/database ./path_to_database_dockerfile
-          docker build -t timemanagerpar3.azurecr.io/api ./path_to_api_dockerfile
-          docker build -t timemanagerpar3.azurecr.io/front ./path_to_front_dockerfile
-
-      # 6. Push Docker images to ACR
-      - name: Push Docker images to ACR
-        run: |
-          docker push timemanagerpar3.azurecr.io/database
+          docker compose -f docker-compose.yml build
+          docker tag api timemanagerpar3.azurecr.io/api
+          docker tag front timemanagerpar3.azurecr.io/front
+          docker tag postgres:latest timemanagerpar3.azurecr.io/database
           docker push timemanagerpar3.azurecr.io/api
           docker push timemanagerpar3.azurecr.io/front
+          docker push timemanagerpar3.azurecr.io/database
 
-      # 7. Deploy containers using Docker Compose (Optional, based on your needs)
+      # 5. Deploy containers using Docker Compose
       - name: Deploy containers using Docker Compose
-        run: |
-          docker compose up -d
+        run: docker compose -f docker-compose.yml up -d
