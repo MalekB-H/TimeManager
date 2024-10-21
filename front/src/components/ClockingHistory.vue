@@ -44,9 +44,10 @@ export default {
         console.log('Réponse de pointage', response);
 
         if (response.data && response.data.data) {
-          recentClockings.value = response.data.data.slice(0, 5);
+          recentClockings.value = response.data.data.slice(0, -1);
+          
         } else if (Array.isArray(response.data)) {
-          recentClockings.value = response.data.slice(0, 5);
+          recentClockings.value = response.data.slice(0, -1);
         } else {
           console.error('Pas la bonne entrée de données:', response.data);
           recentClockings.value = [];
@@ -78,6 +79,7 @@ export default {
 
       endTime.value = new Date();
       try {
+        console.log(recentClockings.value);
         await api.endClocking(props.userId);
         console.log('Temps de fin enregistré:', endTime.value);
         emit('refreshWorkingTime'); 

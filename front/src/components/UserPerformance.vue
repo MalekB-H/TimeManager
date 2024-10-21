@@ -1,23 +1,23 @@
 <template>
-    <div class="bg-white p-6 rounded-lg shadow-md">
-      <h2 class="text-xl font-semibold mb-4">Performance de l'employé</h2>
-      <div class="flex items-center justify-between mb-2">
-        <span>Productivité</span>
-        <div class="w-2/3 bg-gray-200 rounded-full h-2.5">
-          <div class="bg-blue-600 h-2.5 rounded-full" :style="{ width: productivityPercentage + '%' }"></div>
-        </div>
-      </div>
-      <div class="flex items-center justify-between">
-        <span>Heures travaillées</span>
-        <div class="w-2/3 bg-gray-200 rounded-full h-2.5">
-          <div class="bg-green-500 h-2.5 rounded-full" :style="{ width: hoursWorkedPercentage + '%' }"></div>
-        </div>
-      </div>
-      <div class="mt-4">
-        <p>Total des heures travaillées: {{ totalHoursWorked.toFixed(2) }}</p>
-        <p>Moyenne d'heures par jour: {{ averageHoursPerDay.toFixed(2) }}</p>
+  <div class="bg-white p-6 rounded-lg shadow-md">
+    <h2 class="text-xl font-semibold mb-4">Performance de l'employé</h2>
+    <div class="flex items-center justify-between mb-2">
+      <span>Productivité</span>
+      <div class="w-full bg-gray-200 rounded-full h-2.5">
+        <div class="w-full bg-blue-600 h-2.5 rounded-full" :style="{ width: productivityPercentage + '%' }"></div>
       </div>
     </div>
+    <div class="flex items-center justify-between">
+      <span>Heures travaillées</span>
+      <div class="w-full bg-gray-200 rounded-full h-2.5">
+        <div class="w-full bg-green-500 h-2.5 rounded-full" :style="{ width: hoursWorkedPercentage + '%' }"></div>
+      </div>
+    </div>
+    <div class="mt-4">
+      <p>Total des heures travaillées: {{ totalHoursWorked.toFixed(2) }}</p>
+      <p>Moyenne d'heures par jour: {{ averageHoursPerDay.toFixed(2) }}</p>
+    </div>
+  </div>
 </template>
   
 <script>
@@ -60,7 +60,7 @@
           const expectedTotalHours = daysWorked * expectedHoursPerDay;
           
           productivityPercentage.value = Math.min((totalHoursWorked.value / expectedTotalHours) * 100, 100);
-          hoursWorkedPercentage.value = (averageHoursPerDay.value / expectedHoursPerDay) * 100;
+          hoursWorkedPercentage.value = Math.min((averageHoursPerDay.value / expectedHoursPerDay) * 100, 100);
   
         } catch (error) {
           console.error('Error fetching performance data:', error);

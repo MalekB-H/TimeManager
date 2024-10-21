@@ -44,8 +44,8 @@ export default {
       }
     });
 
-    const startDate = ref(new Date(new Date().setDate(new Date().getDate() -6 )).toISOString());
-    const endDate = ref(new Date(new Date().setDate(new Date().getDate() +1 )).toISOString());
+    const startDate = ref(new Date(new Date().setDate(new Date().getDate() - 6)).toISOString());
+    const endDate = ref(new Date().toISOString());
 
     const fetchWorkingTimes = async () => {
       if (!props.userId) return;
@@ -54,21 +54,29 @@ export default {
         const response = await api.getWorkingTimes(props.userId, startDate.value, endDate.value);
         const workingTimes = response.data.data;
 
-        const days = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+        const labels = [];
         const hoursWorked = Array(7).fill(0);
+        const currentDate = new Date(startDate.value);
+
+        for (let i = 0; i < 7; i++) {
+          labels.push(currentDate.toLocaleDateString());
+          currentDate.setDate(currentDate.getDate() + 1);
+        }
 
         workingTimes.forEach(wt => {
           const start = new Date(wt.start_time);
           const end = new Date(wt.end_time);
-          const dayIndex = start.getDay();
           if (end > start) {
-            const hours = (end - start) / (1000 * 60 * 60); 
-            hoursWorked[dayIndex] += hours;
+            const hours = (end - start) / (1000 * 60 * 60);
+            const dayIndex = Math.floor((start - new Date(startDate.value)) / (1000 * 60 * 60 * 24));
+            if (dayIndex >= 0 && dayIndex < 7) {
+              hoursWorked[dayIndex] += hours;
+            }
           }
         });
 
         chartData.value = {
-          labels: days,
+          labels: labels, 
           datasets: [{
             label: 'Heures travaillées',
             data: hoursWorked,

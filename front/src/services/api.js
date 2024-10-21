@@ -49,12 +49,7 @@ export default {
   },
 
   // méthode pour enregistrer la fin du travail
-  endClocking(userId, endTime) {
-    return axios.put(`${API_URL}/clockings/${userId}`, {
-      clocking : {
-        user_id: userId,
-        clock_out : endTime
-      }
-    });
+  endClocking(userId, id) {
+    return axios.put(`${API_URL}/clockings/${userId}/${id}`);
   }
 };
