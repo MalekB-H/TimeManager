@@ -3,7 +3,7 @@ name: Build and Deploy to Azure
 on:
   push:
     branches:
-      - main  # Remplacez par votre branche si nécessaire
+      - main
 
 jobs:
   build-and-deploy:
@@ -22,32 +22,41 @@ jobs:
       - name: Login to Azure Container Registry
         run: echo "${{ secrets.ACR_PASSWORD }}" | docker login timemanagerpar3.azurecr.io --username timemanagerpar3 --password-stdin
 
-      # 4. Build Docker images using Docker Compose
+      # 4. Build Vue.js Frontend
+      - name: Build Vue.js Frontend
+        run: |
+          cd front
+          npm install
+          npm run build
+
+      # 5. Build Elixir API
+      - name: Build Elixir API
+        run: |
+          cd api
+          mix deps.get --only prod
+          MIX_ENV=prod mix compile
+          MIX_ENV=prod mix release
+
+      # 6. Build Docker images using Docker Compose
       - name: Build Docker images
         run: docker compose -f docker-compose.yml build
 
-      # 5. List Docker images (for debugging and verification)
-      - name: List Docker images
-        run: docker images
-
-      # 6. Tag the images manually
+      # 7. Tag the images manually
       - name: Tag Docker images
         run: |
-          # Replace 'your_project_api' and 'your_project_front' by the correct image names from the 'docker images' output
           docker tag timemanager-api timemanagerpar3.azurecr.io/api:latest
           docker tag timemanager-front timemanagerpar3.azurecr.io/front:latest
 
-      # 7. Push Docker images to ACR
+      # 8. Push Docker images to ACR
       - name: Push Docker images to ACR
         run: |
           docker push timemanagerpar3.azurecr.io/api:latest
           docker push timemanagerpar3.azurecr.io/front:latest
-          # You can skip pushing postgres image since it will be pulled from Docker Hub
 
-      # 8. Deploy containers using Docker Compose
+      # 9. Deploy containers using Docker Compose
       - name: Deploy containers
         run: docker compose -f docker-compose.yml up -d
 
-      # 9. Show running containers (docker-compose ps)
+      # 10. List running containers
       - name: List running containers
         run: docker compose -f docker-compose.yml ps
