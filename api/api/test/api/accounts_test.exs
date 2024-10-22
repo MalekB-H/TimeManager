@@ -2412,4 +2412,108 @@ defmodule Api.AccountsTest do
       assert %Ecto.Changeset{} = Accounts.change_working_time(working_time)
     end
   end
+
+  describe "teams" do
+    alias Api.Accounts.Team
+
+    import Api.AccountsFixtures
+
+    @invalid_attrs %{}
+
+    test "list_teams/0 returns all teams" do
+      team = team_fixture()
+      assert Accounts.list_teams() == [team]
+    end
+
+    test "get_team!/1 returns the team with given id" do
+      team = team_fixture()
+      assert Accounts.get_team!(team.id) == team
+    end
+
+    test "create_team/1 with valid data creates a team" do
+      valid_attrs = %{}
+
+      assert {:ok, %Team{} = team} = Accounts.create_team(valid_attrs)
+    end
+
+    test "create_team/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Accounts.create_team(@invalid_attrs)
+    end
+
+    test "update_team/2 with valid data updates the team" do
+      team = team_fixture()
+      update_attrs = %{}
+
+      assert {:ok, %Team{} = team} = Accounts.update_team(team, update_attrs)
+    end
+
+    test "update_team/2 with invalid data returns error changeset" do
+      team = team_fixture()
+      assert {:error, %Ecto.Changeset{}} = Accounts.update_team(team, @invalid_attrs)
+      assert team == Accounts.get_team!(team.id)
+    end
+
+    test "delete_team/1 deletes the team" do
+      team = team_fixture()
+      assert {:ok, %Team{}} = Accounts.delete_team(team)
+      assert_raise Ecto.NoResultsError, fn -> Accounts.get_team!(team.id) end
+    end
+
+    test "change_team/1 returns a team changeset" do
+      team = team_fixture()
+      assert %Ecto.Changeset{} = Accounts.change_team(team)
+    end
+  end
+
+  describe "teams_users" do
+    alias Api.Accounts.Team_user
+
+    import Api.AccountsFixtures
+
+    @invalid_attrs %{}
+
+    test "list_teams_users/0 returns all teams_users" do
+      team_user = team_user_fixture()
+      assert Accounts.list_teams_users() == [team_user]
+    end
+
+    test "get_team_user!/1 returns the team_user with given id" do
+      team_user = team_user_fixture()
+      assert Accounts.get_team_user!(team_user.id) == team_user
+    end
+
+    test "create_team_user/1 with valid data creates a team_user" do
+      valid_attrs = %{}
+
+      assert {:ok, %Team_user{} = team_user} = Accounts.create_team_user(valid_attrs)
+    end
+
+    test "create_team_user/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Accounts.create_team_user(@invalid_attrs)
+    end
+
+    test "update_team_user/2 with valid data updates the team_user" do
+      team_user = team_user_fixture()
+      update_attrs = %{}
+
+      assert {:ok, %Team_user{} = team_user} = Accounts.update_team_user(team_user, update_attrs)
+    end
+
+    test "update_team_user/2 with invalid data returns error changeset" do
+      team_user = team_user_fixture()
+      assert {:error, %Ecto.Changeset{}} = Accounts.update_team_user(team_user, @invalid_attrs)
+      assert team_user == Accounts.get_team_user!(team_user.id)
+    end
+
+    test "delete_team_user/1 deletes the team_user" do
+      team_user = team_user_fixture()
+      assert {:ok, %Team_user{}} = Accounts.delete_team_user(team_user)
+      assert_raise Ecto.NoResultsError, fn -> Accounts.get_team_user!(team_user.id) end
+    end
+
+    test "change_team_user/1 returns a team_user changeset" do
+      team_user = team_user_fixture()
+      assert %Ecto.Changeset{} = Accounts.change_team_user(team_user)
+    end
+  end
 end
