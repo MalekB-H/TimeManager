@@ -41,11 +41,15 @@ export default {
 
       try {
         const response = await api.getClockings(props.userId);
-        console.log('Réponse de pointage', response);
-
         if (response.data && response.data.data) {
           recentClockings.value = response.data.data.slice(0, -1);
           
+          // Mettre à jour startTime et endTime avec la dernière entrée
+          const lastClocking = response.data.data[response.data.data.length - 1];
+          if (lastClocking) {
+            startTime.value = lastClocking.clock_in;
+            endTime.value = lastClocking.clock_out;
+          }
         } else if (Array.isArray(response.data)) {
           recentClockings.value = response.data.slice(0, -1);
         } else {
@@ -59,30 +63,43 @@ export default {
     };
 
     const formatDate = (dateString) => {
-      return new Date(dateString).toLocaleString();
+      if (!dateString) return '';
+      try {
+        return new Date(dateString).toLocaleString('fr-FR', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+      } catch (error) {
+        console.error('Erreur de formatage de date:', error);
+        return '';
+      }
     };
 
     const recordStartTime = async () => {
       if (!props.userId) return;
-
       try {
-        await api.startClocking(props.userId);
+        const response = await api.startClocking(props.userId);
+        // Mettre à jour startTime avec la date de l'API
+        startTime.value = response.data.data.clock_in;
         console.log('Temps de début enregistré:', startTime.value);
-        emit('refreshWorkingTime'); 
+        emit('refreshWorkingTime');
+        await fetchClockings(); // Rafraîchir la liste
       } catch (error) {
         console.error('Erreur lors de l\'enregistrement du début:', error);
       }
     };
 
     const recordEndTime = async () => {
-      if (!props.userId || !startTime.value) return;
-
-      endTime.value = new Date();
+      if (!props.userId) return;
       try {
-        console.log(recentClockings.value);
-        await api.endClocking(props.userId);
+        const response = await api.endClocking(props.userId);
+        endTime.value = response.data.data.clock_out;
         console.log('Temps de fin enregistré:', endTime.value);
-        emit('refreshWorkingTime'); 
+        emit('refreshWorkingTime');
+        await fetchClockings(); // Rafraîchir la liste
       } catch (error) {
         console.error('Erreur lors de l\'enregistrement de la fin:', error);
       }
