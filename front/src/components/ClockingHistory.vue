@@ -47,8 +47,8 @@ export default {
           // Mettre à jour startTime et endTime avec la dernière entrée
           const lastClocking = response.data.data[response.data.data.length - 1];
           if (lastClocking) {
-            startTime.value = lastClocking.clock_in;
-            endTime.value = lastClocking.clock_out;
+            startTime.value = lastClocking.clock_in ? new Date(lastClocking.clock_in) : null;
+            endTime.value = lastClocking.clock_out ? new Date(lastClocking.clock_out) : null;
           }
         } else if (Array.isArray(response.data)) {
           recentClockings.value = response.data.slice(0, -1);
@@ -81,12 +81,11 @@ export default {
     const recordStartTime = async () => {
       if (!props.userId) return;
       try {
-        const response = await api.startClocking(props.userId);
-        // Mettre à jour startTime avec la date de l'API
-        startTime.value = response.data.data.clock_in;
+        await api.startClocking(props.userId);
+        startTime.value = new Date(); 
         console.log('Temps de début enregistré:', startTime.value);
         emit('refreshWorkingTime');
-        await fetchClockings(); // Rafraîchir la liste
+        await fetchClockings(); 
       } catch (error) {
         console.error('Erreur lors de l\'enregistrement du début:', error);
       }
@@ -95,11 +94,11 @@ export default {
     const recordEndTime = async () => {
       if (!props.userId) return;
       try {
-        const response = await api.endClocking(props.userId);
-        endTime.value = response.data.data.clock_out;
+        await api.endClocking(props.userId);
+        endTime.value = new Date(); 
         console.log('Temps de fin enregistré:', endTime.value);
         emit('refreshWorkingTime');
-        await fetchClockings(); // Rafraîchir la liste
+        await fetchClockings(); 
       } catch (error) {
         console.error('Erreur lors de l\'enregistrement de la fin:', error);
       }
