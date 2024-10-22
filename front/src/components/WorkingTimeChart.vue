@@ -1,6 +1,6 @@
 <template>
   <div class="bg-white p-6 rounded-lg shadow-md">
-    <h2 class="text-xl font-semibold mb-4">Répartition du temps de travail</h2>
+    <h2 class="text-xl font-semibold mb-4">Répartition du  de travail</h2>
     <DateRangeSelector @date-range-changed="updateDateRange" />
     <div class="chart-container mt-4">
       <Bar v-if="chartData" :data="chartData" :options="chartOptions" />
@@ -43,9 +43,9 @@ export default {
         }
       }
     });
-
+    
     const startDate = ref(new Date(new Date().setDate(new Date().getDate() - 6)).toISOString());
-    const endDate = ref(new Date().toISOString());
+    const endDate = ref(new Date(new Date().setDate(new Date().getDate() + 1)).toISOString());
 
     const fetchWorkingTimes = async () => {
       if (!props.userId) return;
@@ -63,12 +63,15 @@ export default {
           currentDate.setDate(currentDate.getDate() + 1);
         }
 
+        currentDate.setTime(new Date(startDate.value).getTime());
+
         workingTimes.forEach(wt => {
           const start = new Date(wt.start_time);
           const end = new Date(wt.end_time);
           if (end > start) {
             const hours = (end - start) / (1000 * 60 * 60);
             const dayIndex = Math.floor((start - new Date(startDate.value)) / (1000 * 60 * 60 * 24));
+
             if (dayIndex >= 0 && dayIndex < 7) {
               hoursWorked[dayIndex] += hours;
             }
@@ -76,7 +79,7 @@ export default {
         });
 
         chartData.value = {
-          labels: labels, 
+          labels: labels,
           datasets: [{
             label: 'Heures travaillées',
             data: hoursWorked,
@@ -101,7 +104,7 @@ export default {
 
     const updateDateRange = (range) => {
       startDate.value = new Date(range.startDate).toISOString();
-      endDate.value = new Date(range.endDate).toISOString();
+      endDate.value = new Date(new Date(range.endDate).setDate(new Date(range.endDate).getDate() + 1)).toISOString(); 
       fetchWorkingTimes();
       fetchClockings();
     };

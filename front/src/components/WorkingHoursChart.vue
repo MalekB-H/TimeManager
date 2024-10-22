@@ -57,72 +57,80 @@ export default {
 
     const selectedPeriod = ref('week');
 
-    const fetchData = async () => {
-      if (!props.userId) return;
+const fetchData = async () => {
+  if (!props.userId) return;
 
-      try {
-        const end = new Date();
-        let start = new Date();
-        let labels = [];
+  try {
+    const end = new Date();
+    let start = new Date();
+    let labels = [];
 
-        switch (selectedPeriod.value) {
-          case 'week':
-            start.setDate(end.getDate() - 7);
-            labels = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
-            break;
-          case 'month':
-            start.setMonth(end.getMonth() - 1);
-            labels = Array.from({ length: 31 }, (_, i) => i + 1);
-            break;
-          case 'year':
-            start.setFullYear(end.getFullYear() - 1);
-            labels = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'];
-            break;
-        }
+    switch (selectedPeriod.value) {
+      case 'week':
+        start.setDate(end.getDate() - 7);
+        labels = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+        break;
+      case 'month':
+        start.setMonth(end.getMonth() - 1);
+        labels = Array.from({ length: 31 }, (_, i) => i + 1);
+        break;
+      case 'year':
+        start.setFullYear(end.getFullYear() - 1);
+        labels = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'];
+        break;
+    }
 
-        const workingTimesResponse = await api.getWorkingTimes(props.userId, start.toISOString(), end.toISOString());
-        console.log('Réponse des heures de travail:', workingTimesResponse);
+    const workingTimesResponse = await api.getWorkingTimes(props.userId, start.toISOString(), end.toISOString());
+    console.log('Réponse des heures de travail:', workingTimesResponse);
 
-        let workingTimes = workingTimesResponse.data;
-        const hoursWorked = labels.map(() => 0);
+    let workingTimes = workingTimesResponse.data?.data || [];
+    if (!Array.isArray(workingTimes)) {
+      console.error('Les données des heures de travail ne sont pas un tableau:', workingTimes);
+      workingTimes = []; 
+    }
 
-        workingTimes.forEach(time => {
-          const startTime = new Date(time.start_time);
-          const endTime = time.end_time ? new Date(time.end_time) : new Date();
-          const totalSeconds = (endTime - startTime) / 1000;
-          const hours = totalSeconds / 3600;
+    const hoursWorked = labels.map(() => 0);
 
-          let index;
-          switch (selectedPeriod.value) {
-            case 'week':
-              index = startTime.getDay() - 1;
-              if (index === -1) index = 6;
-              break;
-            case 'month':
-              index = startTime.getDate() - 1;
-              break;
-            case 'year':
-              index = startTime.getMonth();
-              break;
-          }
+    workingTimes.forEach(time => {
+      const startTime = new Date(time.start_time);
+      const endTime = time.end_time ? new Date(time.end_time) : new Date();
+      const totalSeconds = (endTime - startTime) / 1000;
+      const hours = totalSeconds / 3600;
 
-          if (index >= 0 && index < hoursWorked.length) {
-            hoursWorked[index] += hours;
-          }
-        });
-
-        chartData.value = {
-          labels,
-          datasets: [{
-            label: 'Heures travaillées',
-            data: hoursWorked,
-            backgroundColor: 'rgba(75, 192, 192, 0.6)'
-          }]
-        };
-      } catch (error) {
-        console.error('Erreur lors de la récupération des heures de travail:', error);
+      let index;
+      switch (selectedPeriod.value) {
+        case 'week':
+          index = startTime.getDay() - 1; 
+          if (index === -1) index = 6; 
+          break;
+        case 'month':
+          index = startTime.getDate() - 1;
+          break;
+        case 'year':
+          index = startTime.getMonth();
+          break;
       }
+
+      if (index >= 0 && index < hoursWorked.length) {
+        hoursWorked[index] += hours;
+      }
+    });
+
+    chartData.value = {
+      labels,
+      datasets: [{
+        label: 'Heures travaillées',
+        data: hoursWorked,
+        backgroundColor: 'rgba(75, 192, 192, 0.6)'
+      }]
     };
+
+    console.log('Données du graphique:', chartData.value);
+
+  } catch (error) {
+    console.error('Erreur lors de la récupération des heures de travail:', error);
+  }
+};
 
     watch(() => props.userId, fetchData);
     watch(() => selectedPeriod.value, fetchData);
