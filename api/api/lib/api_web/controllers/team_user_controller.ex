@@ -11,11 +11,11 @@ defmodule ApiWeb.Team_userController do
     render(conn, :index, teams_users: teams_users)
   end
 
-  def create(conn, %{"team_user" => team_user_params}) do
+  def create(conn, %{"manage" => team_user_params}) do
     with {:ok, %Team_user{} = team_user} <- Accounts.create_team_user(team_user_params) do
       conn
       |> put_status(:created)
-      |> put_resp_header("location", ~p"/api/teams_users/#{team_user}")
+      |> put_resp_header("location", ~p"/api/manage/#{team_user}")
       |> render(:show, team_user: team_user)
     end
   end
@@ -25,7 +25,7 @@ defmodule ApiWeb.Team_userController do
     render(conn, :show, team_user: team_user)
   end
 
-  def update(conn, %{"id" => id, "team_user" => team_user_params}) do
+  def update(conn, %{"id" => id, "manage" => team_user_params}) do
     team_user = Accounts.get_team_user!(id)
 
     with {:ok, %Team_user{} = team_user} <- Accounts.update_team_user(team_user, team_user_params) do

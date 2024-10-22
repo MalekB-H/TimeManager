@@ -30,5 +30,9 @@ defmodule ApiWeb.Router do
     put "/clockings/:userID/:id", ClockingController, :end_clocking
     get "/clockings/:userID", ClockingController, :list_user_clockings
     resources "/clockings", ClockingController, except: [:new, :edit]
+
+    resources "/teams", TeamController, except: [:new, :edit]
+
+    resources "/manage", Team_userController, except: [:new, :edit]
   end
 end
