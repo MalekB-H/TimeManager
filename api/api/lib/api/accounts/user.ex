@@ -21,7 +21,7 @@ defmodule Api.Accounts.User do
     |> validate_format(:email, ~r/^[^\s]+@[^\s]+$/, message: "must have the @ sign and no spaces")
     |> validate_length(:username, min: 3, max: 20)
     |> validate_length(:password, min: 6, max: 100)
-    |> validate_inclusion(:role, ~w(admin employee manager))
+    |> validate_inclusion(:role, @roles)
     |> unique_constraint(:email)
     |> unique_constraint(:username)
     |> put_password_hash()

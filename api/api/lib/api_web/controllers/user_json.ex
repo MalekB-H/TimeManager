@@ -20,7 +20,8 @@ defmodule ApiWeb.UserJSON do
       id: user.id,
       email: user.email,
       username: user.username,
-      password_hash: user.password_hash
+      password_hash: user.password_hash,
+      role: user.role
     }
   end
 end

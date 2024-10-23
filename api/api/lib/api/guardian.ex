@@ -7,6 +7,11 @@ defmodule Api.Guardian do
     {:ok, to_string(user.id)}
   end
 
+  def build_claims(claims, user, _claims) do
+    claims = Map.put(claims, "role", user.role)
+    {:ok, claims}
+  end
+
   def resource_from_claims(%{"sub" => id}) do
     user = Accounts.get_user!(id)
     {:ok, user}
