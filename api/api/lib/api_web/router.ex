@@ -40,6 +40,7 @@ defmodule ApiWeb.Router do
     pipe_through [:api, :employee]
 
     get "/clockings/:userID", ClockingController, :list_user_clockings
+    put "/clockings/:userID/:id", ClockingController, :end_clocking
     post "/clockings/:userID", ClockingController, :create_clocking
   end
 
@@ -49,6 +50,8 @@ defmodule ApiWeb.Router do
 
     resources "/working_times", WorkingTimeController, except: [:new, :edit]
     get "/working_times/:userID", WorkingTimeController, :list_user_working_times
+    get "/working_times/:userID/:id", WorkingTimeController, :show_user_working_time
+    post "/working_times/:userID", WorkingTimeController, :create
   end
 
   # Routes pour les admins
