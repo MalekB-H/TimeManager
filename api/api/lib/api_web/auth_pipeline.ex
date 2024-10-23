@@ -5,6 +5,7 @@ defmodule ApiWeb.AuthPipeline do
     error_handler: ApiWeb.AuthErrorHandler
 
   plug Guardian.Plug.VerifyHeader, scheme: "Bearer"
+  plug Guardian.Plug.VerifySession
   plug Guardian.Plug.EnsureAuthenticated
   plug Guardian.Plug.LoadResource
 end

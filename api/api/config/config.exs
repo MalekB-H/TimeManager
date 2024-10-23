@@ -68,3 +68,6 @@ import_config "#{config_env()}.exs"
 config :api, Api.Guardian,
   issuer: "api",
   secret_key: "test"
+  permissions: %{
+    default: [:employee]
+  }
