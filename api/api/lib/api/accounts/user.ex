@@ -3,6 +3,8 @@ defmodule Api.Accounts.User do
   import Ecto.Changeset
   import Bcrypt, only: [hash_pwd_salt: 1]
 
+  @roles ["admin", "employee", "manager"]
+
   schema "users" do
     field :username, :string
     field :email, :string
