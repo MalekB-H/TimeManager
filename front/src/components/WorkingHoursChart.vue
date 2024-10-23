@@ -83,10 +83,13 @@ const fetchData = async () => {
     const workingTimesResponse = await api.getWorkingTimes(props.userId, start.toISOString(), end.toISOString());
     console.log('Réponse des heures de travail:', workingTimesResponse);
 
-    let workingTimes = workingTimesResponse.data?.data || [];
-    if (!Array.isArray(workingTimes)) {
-      console.error('Les données des heures de travail ne sont pas un tableau:', workingTimes);
-      workingTimes = []; 
+    // Assurez-vous que workingTimes est toujours un tableau
+    let workingTimes = [];
+    if (Array.isArray(workingTimesResponse.data?.data)) {
+      workingTimes = workingTimesResponse.data.data;
+    } else if (workingTimesResponse.data?.data) {
+      // Si c'est un objet unique, le mettre dans un tableau
+      workingTimes = [workingTimesResponse.data.data];
     }
 
     const hoursWorked = labels.map(() => 0);

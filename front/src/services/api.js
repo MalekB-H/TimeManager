@@ -21,10 +21,10 @@ export default {
   },
 
   getWorkingTimes(userId, start, end) {
-    return axios.get(`${API_URL}/working_times/${userId}`, {
+    return axios.get(`${API_URL}/working_times/user/${userId}`, {
       params: {
-        ...(start && { start }),
-        ...(end && { end })
+        start,
+        end
       }
     });
   },

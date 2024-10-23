@@ -49,7 +49,7 @@ defmodule ApiWeb.Router do
     pipe_through [:api, :manager]
 
     resources "/working_times", WorkingTimeController, except: [:new, :edit]
-    get "/working_times/:userID", WorkingTimeController, :list_user_working_times
+    get "/working_times/user/:userID", WorkingTimeController, :list_user_working_times
     get "/working_times/:userID/:id", WorkingTimeController, :show_user_working_time
     post "/working_times/:userID", WorkingTimeController, :create
   end

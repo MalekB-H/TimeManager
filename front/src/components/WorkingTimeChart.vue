@@ -48,48 +48,64 @@ export default {
     const endDate = ref(new Date(new Date().setDate(new Date().getDate() + 1)).toISOString());
 
     const fetchWorkingTimes = async () => {
-      if (!props.userId) return;
+  if (!props.userId) return;
 
+  try {
+    const response = await api.getWorkingTimes(props.userId, startDate.value, endDate.value);
+    console.log('Réponse des heures de travail:', response);
+
+    // Assurer que nous avons un tableau de données
+    let workingTimes = [];
+    if (response.data?.data) {
+      workingTimes = Array.isArray(response.data.data) ? response.data.data : [response.data.data];
+    }
+
+    const labels = [];
+    const hoursWorked = Array(7).fill(0);
+    const currentDate = new Date(startDate.value);
+
+    // Générer les labels pour les 7 jours
+    for (let i = 0; i < 7; i++) {
+      labels.push(new Date(currentDate).toLocaleDateString());
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    // Réinitialiser la date courante
+    currentDate.setTime(new Date(startDate.value).getTime());
+
+    // Calculer les heures travaillées pour chaque jour
+    workingTimes.forEach(wt => {
       try {
-        const response = await api.getWorkingTimes(props.userId, startDate.value, endDate.value);
-        const workingTimes = response.data.data;
-
-        const labels = [];
-        const hoursWorked = Array(7).fill(0);
-        const currentDate = new Date(startDate.value);
-
-        for (let i = 0; i < 7; i++) {
-          labels.push(currentDate.toLocaleDateString());
-          currentDate.setDate(currentDate.getDate() + 1);
-        }
-
-        currentDate.setTime(new Date(startDate.value).getTime());
-
-        workingTimes.forEach(wt => {
-          const start = new Date(wt.start_time);
-          const end = new Date(wt.end_time);
-          if (end > start) {
-            const hours = (end - start) / (1000 * 60 * 60);
-            const dayIndex = Math.floor((start - new Date(startDate.value)) / (1000 * 60 * 60 * 24));
-
-            if (dayIndex >= 0 && dayIndex < 7) {
-              hoursWorked[dayIndex] += hours;
-            }
+        const start = new Date(wt.start_time);
+        const end = new Date(wt.end_time);
+        if (end > start) {
+          const hours = (end - start) / (1000 * 60 * 60);
+          const dayIndex = Math.floor((start - new Date(startDate.value)) / (1000 * 60 * 60 * 24));
+          
+          if (dayIndex >= 0 && dayIndex < 7) {
+            hoursWorked[dayIndex] += hours;
           }
-        });
-
-        chartData.value = {
-          labels: labels,
-          datasets: [{
-            label: 'Heures travaillées',
-            data: hoursWorked,
-            backgroundColor: 'rgba(54, 162, 235, 0.6)'
-          }]
-        };
+        }
       } catch (error) {
-        console.error('Error fetching working times:', error);
+        console.error('Erreur lors du traitement des heures:', error);
       }
+    });
+
+    chartData.value = {
+      labels: labels,
+      datasets: [{
+        label: 'Heures travaillées',
+        data: hoursWorked,
+        backgroundColor: 'rgba(54, 162, 235, 0.6)'
+      }]
     };
+
+    console.log('Données du graphique:', chartData.value);
+
+  } catch (error) {
+    console.error('Error fetching working times:', error);
+  }
+};
 
     const fetchClockings = async () => {
       if (!props.userId) return;
