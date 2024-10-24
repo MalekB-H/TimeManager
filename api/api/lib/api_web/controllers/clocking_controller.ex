@@ -11,14 +11,14 @@ defmodule ApiWeb.ClockingController do
     render(conn, :index, clockings: clockings)
   end
 
-  def create_clocking(conn, %{"userID" => user_id}) do
+  def start_clocking(conn, %{"userID" => user_id}) do
     case Accounts.get_user(user_id) do
       nil ->
         conn
         |> put_status(:not_found)
         |> put_view(json: ApiWeb.ErrorJSON)
         |> render(:"404", message: "User not found")
-      _user ->
+      user ->
         clocking_params = %{
           "user_id" => String.to_integer(user_id),
           "clock_in" => DateTime.utc_now()
@@ -29,6 +29,33 @@ defmodule ApiWeb.ClockingController do
           |> put_resp_header("location", ~p"/api/clockings/#{clocking}")
           |> render(:show, clocking: clocking)
         end
+    end
+  end
+
+  def end_clocking(conn, %{"userID" => user_id, "id" => clocking_id}) do
+    case Accounts.get_user(user_id) do
+      nil ->
+        conn
+        |> put_status(:not_found)
+        |> put_view(json: ApiWeb.ErrorJSON)
+        |> render(:"404", message: "User not found")
+      user ->
+        case Accounts.get_clocking!(clocking_id) do
+          nil ->
+            conn
+            |> put_status(:not_found)
+            |> put_view(json: ApiWeb.ErrorJSON)
+            |> render(:"404", message: "clocking_id not found")
+      clocking  ->
+        clocking_params = %{
+          "clock_out" => DateTime.utc_now()
+        }
+        with {:ok, %Clocking{} = updated_clocking} <- Accounts.update_clocking(clocking, clocking_params) do
+          conn
+          |> put_status(:ok)
+          |> render(:show, clocking: updated_clocking)
+        end
+      end
     end
   end
 

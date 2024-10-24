@@ -21,10 +21,10 @@ export default {
   },
 
   getWorkingTimes(userId, start, end) {
-    return axios.get(`${API_URL}/working_times/${userId}`, {
+    return axios.get(`${API_URL}/working_times/user/${userId}`, {
       params: {
-        ...(start && { start }),
-        ...(end && { end })
+        start,
+        end
       }
     });
   },
@@ -39,8 +39,17 @@ export default {
     });
   },
 
-
   getClockings(userId) {
     return axios.get(`${API_URL}/clockings/${userId}`);
+  },
+
+  // méthode pour enregistrer le début du travail
+  startClocking(userId) {
+    return axios.post(`${API_URL}/clockings/${userId}` );
+  },
+
+  // méthode pour enregistrer la fin du travail
+  endClocking(userId, id) {
+    return axios.put(`${API_URL}/clockings/${userId}/${id}`);
   }
 };

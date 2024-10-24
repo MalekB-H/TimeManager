@@ -7,6 +7,7 @@
       <p><strong>Nom:</strong> {{ selectedEmployee.username }}</p>
       <p><strong>ID:</strong> {{ selectedEmployee.id }}</p>
       <p><strong>Email:</strong> {{ selectedEmployee.email }}</p>
+      <p><strong>Role:</strong> {{ selectedEmployee.role }}</p>
     </div>
     <p v-else class="text-gray-600">Veuillez sélectionner un employé pour voir ses informations.</p>
 

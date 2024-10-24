@@ -17,6 +17,12 @@
         <div v-show="dropdownVisible" class="z-10 bg-white rounded-lg shadow w-auto dark:bg-gray-700 p-3">
             <div class="max-w-[16rem] mx-auto grid grid-cols-2 gap-4 mb-2">
                 <div>
+                    <label for="date" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Date:</label>
+                    <input type="date" id="date" v-model="selectedDate"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white"
+                        required />
+                </div>
+                <div>
                     <label for="start-time" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Start
                         time:</label>
                     <input type="time" id="start-time" v-model="startTime"
@@ -49,8 +55,9 @@ export default {
     data() {
         return {
             dropdownVisible: false,
-            startTime: "00:00",
-            endTime: "00:00"
+            selectedDate: new Date().toISOString().split('T')[0], 
+            startTime: "09:00", 
+            endTime: "17:00" 
         };
     },
     methods: {
@@ -58,11 +65,10 @@ export default {
             this.dropdownVisible = !this.dropdownVisible;
         },
         async saveTime() {
-            console.log("Start time:", this.startTime, "End time:", this.endTime);
+            console.log("Date:", this.selectedDate, "Start time:", this.startTime, "End time:", this.endTime);
 
-            const currentDate = new Date().toISOString().split('T')[0];
-            const formattedStartTime = `${currentDate}T${this.startTime}:00Z`;
-            const formattedEndTime = `${currentDate}T${this.endTime}:00Z`;
+            const formattedStartTime = `${this.selectedDate}T${this.startTime}:00Z`;
+            const formattedEndTime = `${this.selectedDate}T${this.endTime}:00Z`;
 
             try {
                 await api.postWorkingTimes(this.userId, formattedStartTime, formattedEndTime);
