@@ -18,7 +18,7 @@ defmodule ApiWeb.ClockingController do
         |> put_status(:not_found)
         |> put_view(json: ApiWeb.ErrorJSON)
         |> render(:"404", message: "User not found")
-      user ->
+      _user ->
         clocking_params = %{
           "user_id" => String.to_integer(user_id),
           "clock_in" => DateTime.utc_now()
@@ -39,7 +39,7 @@ defmodule ApiWeb.ClockingController do
         |> put_status(:not_found)
         |> put_view(json: ApiWeb.ErrorJSON)
         |> render(:"404", message: "User not found")
-      user ->
+      _user ->
         case Accounts.get_clocking!(clocking_id) do
           nil ->
             conn
