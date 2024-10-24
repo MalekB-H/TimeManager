@@ -9,26 +9,55 @@ defmodule ApiWeb.Router do
     plug ApiWeb.AuthPipeline
   end
 
- scope "/api", ApiWeb do
-  pipe_through :api
+  # PIpeline pour les routes admins
+  pipeline :admin do
+    plug :auth
+    plug ApiWeb.RoleAuth, ["admin"]
+  end
 
-  post "/register", AuthController, :register
-  post "/login", AuthController, :login
- end
+  # Pipeline pour les routes manager
+  pipeline :manager do
+    plug :auth
+    plug ApiWeb.RoleAuth, ["admin", "manager"]
+  end
 
- scope "/api", ApiWeb do
-  pipe_through [:api, :auth]
+  # Pipeleine pour les routes employées
+  pipeline :employee do
+    plug :auth
+    plug ApiWeb.RoleAuth, ["admin", "manager", "employee"]
+  end
 
-  resources "/users", UserController, except: [:new, :edit]
+  # Routes publiques
+  scope "/api", ApiWeb do
+    pipe_through :api
 
-  post "/working_times/:userID", WorkingTimeController, :create
-  get "/working_times/:userID/:id", WorkingTimeController, :show_user_working_time
-  get "/working_times/:userID", WorkingTimeController, :list_user_working_times
-  resources "/working_times", WorkingTimeController, except: [:new, :edit]
+    post "/register", AuthController, :register
+    post "/login", AuthController, :login
+  end
 
-  post "/clockings/:userID", ClockingController, :start_clocking
-  put "/clockings/:userID/:id", ClockingController, :end_clocking
-  get "/clockings/:userID", ClockingController, :list_user_clockings
-  resources "/clockings", ClockingController, except: [:new, :edit]
+  # Routes pour les employés
+  scope "/api", ApiWeb do
+    pipe_through [:api, :employee]
+
+    get "/clockings/:userID", ClockingController, :list_user_clockings
+    put "/clockings/:userID/:id", ClockingController, :end_clocking
+    post "/clockings/:userID", ClockingController, :create_clocking
+  end
+
+  # Routes pour les managers
+  scope "/api", ApiWeb do
+    pipe_through [:api, :manager]
+
+    resources "/working_times", WorkingTimeController, except: [:new, :edit]
+    get "/working_times/user/:userID", WorkingTimeController, :list_user_working_times
+    get "/working_times/:userID/:id", WorkingTimeController, :show_user_working_time
+    post "/working_times/:userID", WorkingTimeController, :create
+  end
+
+  # Routes pour les admins
+  scope "/api", ApiWeb do
+    pipe_through [:api, :admin]
+
+    resources "/users", UserController, except: [:new, :edit]    
   end
 end

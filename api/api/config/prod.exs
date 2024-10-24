@@ -18,3 +18,11 @@ config :logger, level: :info
 
 # Runtime production configuration, including reading
 # of environment variables, is done on config/runtime.exs.
+
+
+config :api, ApiWeb.Repo,
+  username: "timemanager",
+  password: "timemanager",
+  database: "app",
+  hostname: "48.209.13.210",
+  pool_size: 10
