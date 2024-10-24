@@ -58,6 +58,6 @@ defmodule ApiWeb.Router do
   scope "/api", ApiWeb do
     pipe_through [:api, :admin]
 
-    resources "/users", UserController, except: [:new, :edit]    
+    resources "/users", UserController, except: [:new, :edit]
   end
 end
