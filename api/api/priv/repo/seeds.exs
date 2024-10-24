@@ -13,5 +13,5 @@
 Code.require_file("seeds/users.exs", __DIR__)
 Code.require_file("seeds/working_times.exs", __DIR__)
 Code.require_file("seeds/clockings.exs", __DIR__)
-# Code.require_file("seeds/teams.exs", __DIR__)
-# Code.require_file("seeds/users_teams.exs", __DIR__)
+Code.require_file("seeds/teams.exs", __DIR__)
+Code.require_file("seeds/teams_users.exs", __DIR__)
