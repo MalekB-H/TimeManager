@@ -45,11 +45,16 @@ export default {
 
   // méthode pour enregistrer le début du travail
   startClocking(userId) {
-    return axios.post(`${API_URL}/clockings/${userId}` );
+    return axios.post(`${API_URL}/clockings/${userId}`);
   },
 
   // méthode pour enregistrer la fin du travail
   endClocking(userId, id) {
     return axios.put(`${API_URL}/clockings/${userId}/${id}`);
+  },
+
+  // méthode pour promouvoir un utilisateur
+  promoteUser(userId, userData) {
+    return axios.put(`${API_URL}/users/${userId}`, { user: userData });
   }
 };
