@@ -38,10 +38,8 @@
 
     <!-- Affichage des composants associés au manager -->
     <div v-if="selectedManager" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <ManagerProfile :userId="selectedManager.id" />
       <PromouvoirEmploye v-if="selectedManager.id" @promote-employee="handlePromotion" />
-      <TeamPerformance :userId="selectedManager.id" />
-      <TeamManager :userId="selectedManager.id" />
+      <TeamManager :userId="selectedManager.id" :managers="managers" @team-created="handleTeamCreated" /> <!-- Ajout du composant TeamManager -->
     </div>
   </div>
 </template>
@@ -55,10 +53,8 @@ import WorkingTimeSelector from './WorkingTimeSelector.vue';
 import ClockingHistory from './ClockingHistory.vue';
 import WorkingHoursChart from './WorkingHoursChart.vue';
 import UserPerformance from './UserPerformance.vue';
-import TeamPerformance from './TeamPerformance.vue';
 import PromouvoirEmploye from './PromouvoirEmploye.vue';
-import ManagerProfile from './ManagerProfile.vue';
-import TeamManager from './TeamManager.vue';
+import TeamManager from './TeamManager.vue'; 
 
 export default {
   name: 'DashboardView',
@@ -70,9 +66,7 @@ export default {
     ClockingHistory,
     WorkingHoursChart,
     UserPerformance,
-    TeamPerformance,
     PromouvoirEmploye,
-    ManagerProfile,
     TeamManager,
   },
   setup() {
@@ -103,12 +97,17 @@ export default {
       }
     };
 
+    const handleTeamCreated = (team) => {
+      console.log('Nouvelle équipe créée:', team);
+    };
+
     return { 
       selectedEmployee, 
       selectedManager, 
       setSelectedEmployee, 
       setSelectedManager,
       handlePromotion,
+      handleTeamCreated,
       managers
     };
   },

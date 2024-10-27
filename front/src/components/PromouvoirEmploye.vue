@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="bg-white p-6 rounded-lg shadow-md">
       <h1 class="text-lg font-bold mb-4">Promouvoir un Employé</h1>
       <EmployeeSelector @employee-selected="handleEmployeeSelected" />
       <button @click="promouvoirEmploye" :disabled="!selectedEmployee" class="mt-4 bg-blue-500 text-white py-2 px-4 rounded">

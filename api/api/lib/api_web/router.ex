@@ -52,6 +52,11 @@ defmodule ApiWeb.Router do
     get "/working_times/user/:userID", WorkingTimeController, :list_user_working_times
     get "/working_times/:userID/:id", WorkingTimeController, :show_user_working_time
     post "/working_times/:userID", WorkingTimeController, :create
+
+    resources "/teams", TeamsController, except: [:new, :edit]
+
+    post "/teams/:teamName", TeamsController, :create
+
   end
 
   # Routes pour les admins

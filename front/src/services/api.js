@@ -56,5 +56,19 @@ export default {
   // méthode pour promouvoir un utilisateur
   promoteUser(userId, userData) {
     return axios.put(`${API_URL}/users/${userId}`, { user: userData });
-  }
+  },
+
+  teams(userId){
+    return axios.post(`${API_URL}/teams/${userId}`);
+  },
+
+  createTeam(teamData) {
+    return axios.post(`${API_URL}/teams`, teamData); 
+  },  
+
+
+  getUsers() {
+    return axios.get(`${API_URL}/users`); 
+  },
+
 };

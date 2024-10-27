@@ -11,12 +11,14 @@ defmodule ApiWeb.TeamController do
     render(conn, :index, teams: teams)
   end
 
-  def create(conn, %{"team" => team_params}) do
+  def create(conn, %{"name" => name, "manager_id" => manager_id, "members" => members}) do
+    team_params = %{"name" => name, "manager_id" => manager_id, "members" => members}
+
     with {:ok, %Team{} = team} <- Accounts.create_team(team_params) do
       conn
       |> put_status(:created)
-      |> put_resp_header("location", ~p"/api/teams/#{team}")
-      |> render(:show, team: team)
+      |> put_resp_header("location", ~p"/api/teams/#{team.id}")
+      |> render("show.json", team: team)
     end
   end
 
