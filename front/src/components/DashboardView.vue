@@ -39,13 +39,14 @@
     <!-- Affichage des composants associés au manager -->
     <div v-if="selectedManager" class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <PromouvoirEmploye v-if="selectedManager.id" @promote-employee="handlePromotion" />
-      <TeamManager :userId="selectedManager.id" :managers="managers" @team-created="handleTeamCreated" /> <!-- Ajout du composant TeamManager -->
+      <TeamManager :userId="selectedManager.id" :managers="managersList" @team-created="handleTeamCreated" /> <!-- Ajout du composant TeamManager -->
     </div>
   </div>
 </template>
 
 <script>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import api from '../services/api';
 import EmployeeSelector from './EmployeeSelector.vue';
 import ManagerSelector from './ManagerSelector.vue';
 import WorkingTimeChart from './WorkingTimeChart.vue';
@@ -72,7 +73,19 @@ export default {
   setup() {
     const selectedEmployee = ref(null);
     const selectedManager = ref(null);
-    const managers = ref([]); 
+    const managersList = ref([]); 
+
+    const loadManagers = async () => {
+      try {
+        const response = await api.searchUsers();
+        if (response.data && Array.isArray(response.data.data)) {
+          // Filtrer pour ne garder que les managers
+          managersList.value = response.data.data.filter(user => user.role === 'manager');
+        }
+      } catch (error) {
+        console.error('Erreur lors du chargement des managers:', error);
+      }
+    };
 
     const setSelectedEmployee = (employee) => {
       selectedEmployee.value = employee;
@@ -89,10 +102,11 @@ export default {
         selectedEmployee.value.isManager = true;
         console.log(`L'employé ${selectedEmployee.value.username} a été promu au statut de manager.`);
         
-        managers.value.push({
+        managersList.value.push({
           id: promotedEmployee.id,
           username: promotedEmployee.username, 
-          email: promotedEmployee.email
+          email: promotedEmployee.email,
+          role: 'manager'
         });
       }
     };
@@ -101,6 +115,8 @@ export default {
       console.log('Nouvelle équipe créée:', team);
     };
 
+    onMounted(loadManagers);
+
     return { 
       selectedEmployee, 
       selectedManager, 
@@ -108,7 +124,7 @@ export default {
       setSelectedManager,
       handlePromotion,
       handleTeamCreated,
-      managers
+      managersList
     };
   },
 };

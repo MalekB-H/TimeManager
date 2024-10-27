@@ -63,8 +63,12 @@ export default {
   },
 
   createTeam(teamData) {
-    return axios.post(`${API_URL}/teams`, teamData); 
-  },  
+    console.log('Envoi des données:', teamData); // Pour le débogage
+    return axios.post(`${API_URL}/teams`, {
+      name: teamData.name,
+      manager_id: parseInt(teamData.manager_id, 10)
+    }); 
+  }, 
 
 
   getUsers() {

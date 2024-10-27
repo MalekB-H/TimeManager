@@ -573,13 +573,4 @@ defmodule Api.Accounts do
   def change_team_user(%Team_user{} = team_user, attrs \\ %{}) do
     Team_user.changeset(team_user, attrs)
   end
-
-
-def create_team(%{"manager_id" => manager_id}) do
-  %Team{}
-  |> Team.changeset(%{"manager_id" => manager_id})
-  |> Repo.insert()
-end
-
-
 end

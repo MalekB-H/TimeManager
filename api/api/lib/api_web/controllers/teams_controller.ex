@@ -1,4 +1,4 @@
-defmodule ApiWeb.TeamController do
+defmodule ApiWeb.TeamsController do
   use ApiWeb, :controller
 
   alias Api.Accounts
@@ -11,27 +11,48 @@ defmodule ApiWeb.TeamController do
     render(conn, :index, teams: teams)
   end
 
-  def create(conn, %{"name" => name, "manager_id" => manager_id, "members" => members}) do
-    team_params = %{"name" => name, "manager_id" => manager_id, "members" => members}
+  def create(conn, params) do
+    team_params = %{
+      "name" => params["name"],
+      "manager_id" => params["manager_id"]
+    }
 
     with {:ok, %Team{} = team} <- Accounts.create_team(team_params) do
       conn
       |> put_status(:created)
       |> put_resp_header("location", ~p"/api/teams/#{team.id}")
-      |> render("show.json", team: team)
+      |> json(%{
+        data: %{
+          id: team.id,
+          name: team.name,
+          manager_id: team.manager_id
+        }
+      })
     end
   end
 
   def show(conn, %{"id" => id}) do
     team = Accounts.get_team!(id)
-    render(conn, :show, team: team)
+    json(conn, %{
+      data: %{
+        id: team.id,
+        name: team.name,
+        manager_id: team.manager_id
+      }
+    })
   end
 
   def update(conn, %{"id" => id, "team" => team_params}) do
     team = Accounts.get_team!(id)
 
     with {:ok, %Team{} = team} <- Accounts.update_team(team, team_params) do
-      render(conn, :show, team: team)
+      json(conn, %{
+        data: %{
+          id: team.id,
+          name: team.name,
+          manager_id: team.manager_id
+        }
+      })
     end
   end
 
