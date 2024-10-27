@@ -1,5 +1,4 @@
 version: '3.8'
-
 services:
   api:
     container_name: api
@@ -12,7 +11,10 @@ services:
       - database
     env_file:
       - api.env
-    
+    networks:
+      - app-network
+      - monitoring
+
   front:
     container_name: front
     build: ./front
@@ -23,7 +25,9 @@ services:
     depends_on:
       - api
       - database
-  
+    networks:
+      - app-network
+
   database:
     container_name: database
     image: postgres
@@ -34,3 +38,50 @@ services:
       - ./database:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+    networks:
+      - app-network
+
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    networks:
+      - monitoring
+    depends_on:
+      - api
+
+  grafana:
+    container_name: grafana
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    networks:
+      - monitoring
+    depends_on:
+      - prometheus
+
+volumes:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  app-network:
+    driver: bridge
+  monitoring:
+    driver: bridge

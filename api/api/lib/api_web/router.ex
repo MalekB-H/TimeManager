@@ -60,4 +60,13 @@ defmodule ApiWeb.Router do
 
     resources "/users", UserController, except: [:new, :edit]    
   end
+
+  pipeline :metrics do
+    plug :accepts, ["json"]
+  end
+
+  scope "/metrics" do
+    pipe_through [:api] 
+    get "/", ApiWeb.MetricsController, :index
+  end
 end

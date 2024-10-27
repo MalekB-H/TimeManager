@@ -20,6 +20,13 @@ defmodule ApiWeb.AuthController do
       {:ok, user} ->
         {:ok, token, _claims} = Guardian.encode_and_sign(user)
         conn
+
+        # Incrémenter le compteur de connexions réussies
+        Prometheus.Metric.Counter.inc(
+          name: :api_logins_total,
+          labels: ["success"]
+        )
+        
         |> put_status(:ok)
         |> render("login.json", jwt: token)  # Changez cette ligne
       {:error, :unauthorized} ->

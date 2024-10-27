@@ -21,6 +21,12 @@ defmodule ApiWeb.WorkingTimeController do
       _user ->
         working_time_params = Map.put(working_time_params, "user_id", String.to_integer(user_id))
         with {:ok, %WorkingTime{} = working_time} <- Accounts.create_working_time(working_time_params) do
+          # Incrémenter le compteur de working times créés
+          Prometheus.Metric.Counter.inc(
+            name: :api_working_times_total,
+            labels: ["created"]
+          )
+
           conn
           |> put_status(:created)
           |> put_resp_header("location", ~p"/api/working_times/#{working_time}")

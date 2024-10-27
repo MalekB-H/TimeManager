@@ -51,5 +51,21 @@ export default {
   // méthode pour enregistrer la fin du travail
   endClocking(userId, id) {
     return axios.put(`${API_URL}/clockings/${userId}/${id}`);
+  },
+
+  getUsersCount() {
+    return axios.get(`${API_URL}/metrics/users/count`);
+  },
+
+  getTodayLoginCount() {
+    return axios.get(`${API_URL}/metrics/logins/today`);
+  },
+
+  getActiveClockingsCount() {
+    return axios.get(`${API_URL}/metrics/clockings/active`);
+  },
+
+  checkAdminAccess() {
+    return axios.get(`${API_URL}/admin/check`);
   }
 };

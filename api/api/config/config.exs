@@ -68,3 +68,36 @@ import_config "#{config_env()}.exs"
 config :api, Api.Guardian,
   issuer: "api",
   secret_key: "test"
+
+config :prometheus, Api.Prometheus,
+  path: "/metrics"
+
+# Activez la télémétrie
+config :telemetry_poller, measurements: [
+  {Api.Telemetry, :dispatch_metrics, []}
+]
+
+config :prometheus, ApiWeb.PipelineInstrumenter,
+  labels: [:status_class, :method, :host, :scheme, :request_path],
+  duration_buckets: [
+    10,
+    100,
+    1_000,
+    10_000,
+    100_000,
+    300_000,
+    500_000,
+    750_000,
+    1_000_000,
+    1_500_000,
+    2_000_000,
+    3_000_000
+  ]
+
+config :prometheus, Prometheus.PlugExporter,
+  path: "/metrics",
+  format: :auto,
+  registry: :default
+
+config :prometheus,
+  vm_memory_collector_metrics: [:total, :processes_used, :atom_used, :binary, :ets]
