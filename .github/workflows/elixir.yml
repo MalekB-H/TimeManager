@@ -3,7 +3,7 @@ name: Build and Deploy to Azure
 on:
   push:
     branches:
-      - main
+      - main  # Remplacez par votre branche si nécessaire
 
 jobs:
   build-and-deploy:
@@ -14,52 +14,40 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # 2. Install Erlang and Elixir
-      - name: Install Erlang and Elixir
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y esl-erlang elixir
-
-      # 3. Set up Docker Buildx
+      # 2. Setup Docker Buildx
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      # 4. Login to Azure Container Registry
+      # 3. Login to Azure Container Registry
       - name: Login to Azure Container Registry
         run: echo "${{ secrets.ACR_PASSWORD }}" | docker login timemanagerpar3.azurecr.io --username timemanagerpar3 --password-stdin
 
-      # 5. Build and compile the API (Elixir Phoenix)
-      - name: Build and compile the API
-        run: |
-          cd api
-          mix deps.get --only prod
-          MIX_ENV=prod mix compile
-          MIX_ENV=prod mix release
-
-      # 6. Build Docker images using Docker Compose
+      # 4. Build Docker images using Docker Compose
       - name: Build Docker images
         run: docker compose -f docker-compose.yml build
 
-      # 7. List Docker images
+      # 5. List Docker images (for debugging and verification)
       - name: List Docker images
         run: docker images
 
-      # 8. Tag Docker images manually
+      # 6. Tag the images manually
       - name: Tag Docker images
         run: |
+          # Replace 'your_project_api' and 'your_project_front' by the correct image names from the 'docker images' output
           docker tag timemanager-api timemanagerpar3.azurecr.io/api:latest
           docker tag timemanager-front timemanagerpar3.azurecr.io/front:latest
 
-      # 9. Push Docker images to ACR
+      # 7. Push Docker images to ACR
       - name: Push Docker images to ACR
         run: |
           docker push timemanagerpar3.azurecr.io/api:latest
           docker push timemanagerpar3.azurecr.io/front:latest
+          # You can skip pushing postgres image since it will be pulled from Docker Hub
 
-      # 10. Deploy containers using Docker Compose
+      # 8. Deploy containers using Docker Compose
       - name: Deploy containers
         run: docker compose -f docker-compose.yml up -d
 
-      # 11. Show running containers
+      # 9. Show running containers (docker-compose ps)
       - name: List running containers
         run: docker compose -f docker-compose.yml ps
